@@ -1,6 +1,9 @@
 import React from 'react';
 import './Login.scss';
 
+import useLoading from 'Hooks/useLoading';
+import useInput from 'Hooks/useInput';
+
 import { Form, Input, Button, Typography, Card } from 'antd';
 
 const { Title, Text, Link } = Typography;
@@ -14,6 +17,21 @@ const tailLayout = {
 };
 
 export default function Login() {
+	const [loginObj, changeLoginObjectValue, resetLoginObjectValue] = useInput({
+		username: '',
+		password: '',
+	});
+	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
+
+	function handleLogin() {
+		showSubmitLoading();
+
+		setTimeout(() => {
+			hideSubmitLoading();
+			resetLoginObjectValue();
+		}, 1000);
+	}
+
 	return (
 		<div className="container login-container">
 			<Title>MPKMB 2020</Title>
@@ -27,21 +45,37 @@ export default function Login() {
 					<Form.Item
 						label="Username"
 						name="username"
-						rules={[{ required: true, message: 'Please input your username!' }]}
+						rules={[
+							{ required: true, message: 'Isi Username terlebih dahulu!' },
+						]}
 					>
-						<Input />
+						<Input
+							value={loginObj.username}
+							onChange={changeLoginObjectValue}
+						/>
 					</Form.Item>
 
 					<Form.Item
 						label="Password"
 						name="password"
-						rules={[{ required: true, message: 'Please input your password!' }]}
+						rules={[
+							{ required: true, message: 'Isi Password terlebih dahulu!' },
+						]}
 					>
-						<Input.Password />
+						<Input.Password
+							value={loginObj.password}
+							onChange={changeLoginObjectValue}
+						/>
 					</Form.Item>
 
 					<Form.Item {...tailLayout} className="login-button-submit">
-						<Button type="primary" htmlType="submit" block loading>
+						<Button
+							type="primary"
+							htmlType="submit"
+							block
+							loading={submitLoading}
+							onClick={handleLogin}
+						>
 							Submit
 						</Button>
 					</Form.Item>

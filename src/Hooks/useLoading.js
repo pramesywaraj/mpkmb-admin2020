@@ -4,7 +4,7 @@ export default function useLoading() {
 	const [loading, setLoading] = useState(false);
 
 	function showLoading() {
-		setLoading(false);
+		setLoading(true);
 	}
 
 	function hideLoading() {

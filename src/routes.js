@@ -8,7 +8,9 @@ import {
 import PropTypes from 'prop-types';
 
 import LayoutBase from 'Components/Layout/LayoutBase';
+
 import Login from 'Pages/Login/Login';
+import Dashboard from 'Pages/Dashboard/Dashboard';
 
 export const ROUTES = [
 	{
@@ -18,26 +20,26 @@ export const ROUTES = [
 		layout: false,
 		component: Login,
 	},
-	// {
-	// 	path: '/admin',
-	// 	key: 'ADMIN_ROUTES',
-	// 	component: (props) => {
-	// 		if (!localStorage.getItem('CS_ADMIN_USER')) {
-	// 			alert('Anda harus login terlebih dahulu!');
-	// 			return <Redirect to={'/'} />;
-	// 		}
-	// 		return <RenderRoutes {...props} />;
-	// 	},
-	// 	routes: [
-	// 		{
-	// 			path: '/admin',
-	// 			key: 'DASHBOARD',
-	// 			exact: true,
-	// 			layout: true,
-	// 			component: Dashboard,
-	// 		},
-	// 	],
-	// },
+	{
+		path: '/admin',
+		key: 'ADMIN_ROUTES',
+		component: (props) => {
+			if (!localStorage.getItem('MPKMB_ADMIN_USER')) {
+				alert('Anda harus login terlebih dahulu!');
+				return <Redirect to={'/'} />;
+			}
+			return <RenderRoutes {...props} />;
+		},
+		routes: [
+			{
+				path: '/admin',
+				key: 'DASHBOARD',
+				exact: true,
+				layout: true,
+				component: Dashboard,
+			},
+		],
+	},
 ];
 
 function ModifiedRoute(route) {
