@@ -3,7 +3,7 @@ import './Login.scss';
 
 import { Form, Input, Button, Typography, Card } from 'antd';
 
-const { Title } = Typography;
+const { Title, Text, Link } = Typography;
 
 const layout = {
 	labelCol: { span: 5 },
@@ -16,7 +16,7 @@ const tailLayout = {
 export default function Login() {
 	return (
 		<div className="container login-container">
-			<Title>Panel Admin MPKMB 2020</Title>
+			<Title>MPKMB 2020</Title>
 			<Card title="Login untuk Masuk" bordered={false} className="login-card">
 				<Form
 					name="basic"
@@ -41,12 +41,15 @@ export default function Login() {
 					</Form.Item>
 
 					<Form.Item {...tailLayout} className="login-button-submit">
-						<Button type="primary" htmlType="submit" block>
+						<Button type="primary" htmlType="submit" block loading>
 							Submit
 						</Button>
 					</Form.Item>
 				</Form>
 			</Card>
+			<Text mark className="with-love-text">
+				Created with ❤️ by <Link href="https://codepanda.id/">Codepanda</Link>
+			</Text>
 		</div>
 	);
 }
