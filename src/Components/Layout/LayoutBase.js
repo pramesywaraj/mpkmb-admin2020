@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import 'antd/dist/antd.css';
 import { Layout, Menu, Typography } from 'antd';
 
@@ -14,12 +15,14 @@ const { Text, Link } = Typography;
 
 const menuItems = [
 	{
-		id: '/',
+		id: '1',
+		route: '/',
 		name: 'Dashboard',
 		icon: <HomeFilled />,
 	},
 	{
-		id: '/penugasan',
+		id: '2',
+		route: '/penugasan',
 		name: 'Penugasan',
 		icon: <ReadFilled />,
 	},
@@ -27,9 +30,23 @@ const menuItems = [
 
 export default function LayoutBase({ children }) {
 	const [collapsed, setCollapsed] = useState(false);
+	const history = useHistory();
 
 	function onCollapsed(collapsed) {
 		setCollapsed(collapsed);
+	}
+
+	function onGoTo(route) {
+		history.push(`/admin${route}`);
+	}
+
+	function onLogout() {
+		localStorage.removeItem('MPKMB_ADMIN_USER');
+
+		setTimeout(() => {
+			alert('Anda telah keluar dari aplikasi ini.');
+			history.push('/');
+		});
 	}
 
 	return (
@@ -38,26 +55,19 @@ export default function LayoutBase({ children }) {
 				<div className="layout-logo">
 					<img src={MainLogo} alt="Logo MPKMB 2020" />
 				</div>
-				<Menu theme="dark" defaultSelectedKeys={['/']} mode="inline">
-					{menuItems.map((item) => (
-						<Menu.Item key={item.id} icon={item.icon}>
-							{item.name}
+				<Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
+					{menuItems.map(({ id, icon, name, route }) => (
+						<Menu.Item key={id} icon={icon} onClick={() => onGoTo(route)}>
+							{name}
 						</Menu.Item>
 					))}
-					<Menu.Item key="logout" icon={<LogoutOutlined />}>
+					<Menu.Item key="logout" icon={<LogoutOutlined />} onClick={onLogout}>
 						Keluar
 					</Menu.Item>
 				</Menu>
 			</Sider>
 			<Layout className="site-layout">
-				<Content className="layout-content-container">
-					<div
-						className="site-layout-background"
-						style={{ padding: 24, minHeight: 360 }}
-					>
-						{children}
-					</div>
-				</Content>
+				<Content className="layout-content-container">{children}</Content>
 				<Footer style={{ textAlign: 'center' }}>
 					<Text mark className="with-love-text">
 						Created with{' '}

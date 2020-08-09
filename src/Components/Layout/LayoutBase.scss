@@ -2,7 +2,8 @@
   min-height: 100vh;
 }
 
-.site-layout .site-layout-background {
+.layout-content-container {
+  margin: 20px;
   background: #fff;
 }
 
@@ -20,6 +21,3 @@
   }
 }
 
-.layout-content-container {
-  margin: 20px;
-}

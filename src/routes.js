@@ -1,20 +1,17 @@
 import React from 'react';
-import {
-	BrowserRouter as Router,
-	Switch,
-	Route,
-	Redirect,
-} from 'react-router-dom';
+import { Router, Switch, Route, Redirect } from 'react-router-dom';
+import history from 'Utils/history';
 import PropTypes from 'prop-types';
 
 import LayoutBase from 'Components/Layout/LayoutBase';
 
 import Login from 'Pages/Login/Login';
 import Dashboard from 'Pages/Dashboard/Dashboard';
+import Assignment from 'Pages/Assignment/Assignment';
 
 export const ROUTES = [
 	{
-		path: '/',
+		path: '/login',
 		key: 'LOGIN',
 		exact: true,
 		layout: false,
@@ -31,6 +28,13 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: Dashboard,
+			},
+			{
+				path: '/admin/penugasan',
+				key: 'ASSIGNMENT',
+				exact: true,
+				layout: true,
+				component: Assignment,
 			},
 		],
 	},
@@ -57,28 +61,27 @@ function ModifiedRoute(route) {
 		);
 
 	return (
-		<>
-			<LayoutBase>
-				<Route
-					path={route.path}
-					exact={route.exact}
-					render={(props) => (
-						<route.component {...props} routes={route.routes} />
-					)}
-				/>
-			</LayoutBase>
-		</>
+		<LayoutBase>
+			<Route
+				path={route.path}
+				exact={route.exact}
+				render={(props) => <route.component {...props} routes={route.routes} />}
+			/>
+		</LayoutBase>
 	);
 }
 
 export default function RenderRoutes({ routes }) {
 	return (
-		<Router>
+		<Router history={history}>
 			<Switch>
 				{routes.map((route) => {
 					return <ModifiedRoute key={route.key} {...route} />;
 				})}
-				<Route component={() => <h1>Not Found!</h1>} />
+				<Route exact path="/" component={() => <Redirect to="/login" />} />
+				<Route>
+					<h1>Not Found!</h1>
+				</Route>
 			</Switch>
 		</Router>
 	);
