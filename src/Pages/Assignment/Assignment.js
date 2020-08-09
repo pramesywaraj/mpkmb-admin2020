@@ -7,8 +7,14 @@ import {
 	Space,
 	Button,
 	Switch,
+	Row,
 } from 'antd';
-import { EditFilled, DeleteFilled } from '@ant-design/icons';
+import { EditFilled, DeleteFilled, ReadFilled } from '@ant-design/icons';
+import AddNewAssignmentModal from 'Components/Modal/AddNewAssignmentModal';
+
+import useModal from 'Hooks/useModal';
+import useLoading from 'Hooks/useLoading';
+
 import { PENUGASAN, MATERI } from 'Constants/assignmentConst';
 
 import './Assignment.scss';
@@ -46,10 +52,30 @@ const dummyAssignmentData = [
 ];
 
 export default function Assignment() {
+	const [isFormModalVisible, openFormModal, closeFormModal] = useModal();
+	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
+
+	function handleOpen() {
+		openFormModal();
+	}
+
+	function handleClose() {
+		closeFormModal();
+	}
+
+	function addNewAssignment() {
+		alert('Submitted');
+	}
+
 	return (
 		<>
 			<PageHeader title="Penugasan" />
 			<div className="assignment-table-container">
+				<Row className="assignment-add-container" align="middle" justify="end">
+					<Button type="primary" icon={<ReadFilled />} onClick={handleOpen}>
+						Tambah Tugas/Materi Baru
+					</Button>
+				</Row>
 				<Table
 					dataSource={dummyAssignmentData}
 					pagination={{ position: ['bottomCenter'] }}
@@ -87,6 +113,12 @@ export default function Assignment() {
 					/>
 				</Table>
 			</div>
+			<AddNewAssignmentModal
+				isVisible={isFormModalVisible}
+				addLoading={submitLoading}
+				handleCancel={handleClose}
+				handleSubmit={addNewAssignment}
+			/>
 		</>
 	);
 }
