@@ -1,8 +1,8 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import './Login.scss';
 
 import useLoading from 'Hooks/useLoading';
-import useInput from 'Hooks/useInput';
 
 import { Form, Input, Button, Typography, Card } from 'antd';
 
@@ -17,18 +17,20 @@ const tailLayout = {
 };
 
 export default function Login() {
-	const [loginObj, changeLoginObjectValue, resetLoginObjectValue] = useInput({
-		username: '',
-		password: '',
-	});
+	const [form] = Form.useForm();
+	const history = useHistory();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 
-	function handleLogin() {
+	function handleLogin(values) {
 		showSubmitLoading();
 
 		setTimeout(() => {
 			hideSubmitLoading();
-			resetLoginObjectValue();
+			form.resetFields();
+
+			localStorage.setItem('MPKMB_ADMIN_USER', values);
+
+			history.push('/admin');
 		}, 1000);
 	}
 
@@ -37,10 +39,12 @@ export default function Login() {
 			<Title>MPKMB 2020</Title>
 			<Card title="Login untuk Masuk" bordered={false} className="login-card">
 				<Form
+					{...layout}
+					form={form}
 					name="basic"
 					initialValues={{ remember: true }}
 					className="login-form"
-					{...layout}
+					onFinish={handleLogin}
 				>
 					<Form.Item
 						label="Username"
@@ -49,10 +53,7 @@ export default function Login() {
 							{ required: true, message: 'Isi Username terlebih dahulu!' },
 						]}
 					>
-						<Input
-							value={loginObj.username}
-							onChange={changeLoginObjectValue}
-						/>
+						<Input />
 					</Form.Item>
 
 					<Form.Item
@@ -62,10 +63,7 @@ export default function Login() {
 							{ required: true, message: 'Isi Password terlebih dahulu!' },
 						]}
 					>
-						<Input.Password
-							value={loginObj.password}
-							onChange={changeLoginObjectValue}
-						/>
+						<Input.Password />
 					</Form.Item>
 
 					<Form.Item {...tailLayout} className="login-button-submit">
@@ -82,7 +80,11 @@ export default function Login() {
 				</Form>
 			</Card>
 			<Text mark className="with-love-text">
-				Created with ❤️ by <Link href="https://codepanda.id/">Codepanda</Link>
+				Created with{' '}
+				<span role="img" aria-label="love-emoji">
+					❤️
+				</span>{' '}
+				by <Link href="https://codepanda.id/">Codepanda</Link>
 			</Text>
 		</div>
 	);

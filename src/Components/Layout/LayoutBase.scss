@@ -1,0 +1,25 @@
+.layout-container {
+  min-height: 100vh;
+}
+
+.site-layout .site-layout-background {
+  background: #fff;
+}
+
+.layout-logo {
+  width: 85px;
+  height: auto;
+
+  margin: 10px auto;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+}
+
+.layout-content-container {
+  margin: 20px;
+}

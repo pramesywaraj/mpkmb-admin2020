@@ -23,13 +23,7 @@ export const ROUTES = [
 	{
 		path: '/admin',
 		key: 'ADMIN_ROUTES',
-		component: (props) => {
-			if (!localStorage.getItem('MPKMB_ADMIN_USER')) {
-				alert('Anda harus login terlebih dahulu!');
-				return <Redirect to={'/'} />;
-			}
-			return <RenderRoutes {...props} />;
-		},
+		component: CheckAuth,
 		routes: [
 			{
 				path: '/admin',
@@ -41,6 +35,14 @@ export const ROUTES = [
 		],
 	},
 ];
+
+function CheckAuth(props) {
+	if (!localStorage.getItem('MPKMB_ADMIN_USER')) {
+		alert('Anda harus login terlebih dahulu!');
+		return <Redirect to={'/'} />;
+	}
+	return <RenderRoutes {...props} />;
+}
 
 function ModifiedRoute(route) {
 	const { layout } = route;

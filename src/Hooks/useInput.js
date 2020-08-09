@@ -1,14 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function useInput(initialValue) {
 	const [state, setInputState] = useState(initialValue);
+	const [initialState, setInitState] = useState(initialValue);
+
+	useEffect(() => {
+		setInitState(initialValue);
+	}, []);
 
 	const resetValue = () => {
-		setInputState(initialValue);
+		setInputState({
+			...initialState,
+		});
+
+		console.log(initialState);
+		console.log(state);
 	};
 
 	const changeValue = (e) => {
 		const { name, value } = e.target;
+
+		console.log(e.target);
 		setInputState({
 			...state,
 			[name]: value,
