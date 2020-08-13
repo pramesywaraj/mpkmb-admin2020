@@ -1,5 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { sha256 } from 'js-sha256';
+
 import './Login.scss';
 
 import useLoading from 'Hooks/useLoading';
@@ -21,17 +23,23 @@ export default function Login() {
 	const history = useHistory();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 
-	function handleLogin(values) {
+	function handleLogin() {
 		showSubmitLoading();
 
-		setTimeout(() => {
-			hideSubmitLoading();
-			form.resetFields();
+		let userData = {
+			...form.getFieldsValue(),
+		};
 
-			localStorage.setItem('MPKMB_ADMIN_USER', values);
+		userData.password = sha256(userData.password);
 
-			history.push('/admin');
-		}, 1000);
+		// setTimeout(() => {
+		// 	hideSubmitLoading();
+		// 	form.resetFields();
+
+		// 	localStorage.setItem('MPKMB_ADMIN_USER', values);
+
+		// 	history.push('/admin');
+		// }, 1000);
 	}
 
 	return (
@@ -42,16 +50,13 @@ export default function Login() {
 					{...layout}
 					form={form}
 					name="basic"
-					initialValues={{ remember: true }}
 					className="login-form"
 					onFinish={handleLogin}
 				>
 					<Form.Item
-						label="Username"
-						name="username"
-						rules={[
-							{ required: true, message: 'Isi Username terlebih dahulu!' },
-						]}
+						label="Email"
+						name="email"
+						rules={[{ required: true, message: 'Isi Email terlebih dahulu!' }]}
 					>
 						<Input />
 					</Form.Item>
@@ -72,7 +77,6 @@ export default function Login() {
 							htmlType="submit"
 							block
 							loading={submitLoading}
-							onClick={handleLogin}
 						>
 							Submit
 						</Button>
