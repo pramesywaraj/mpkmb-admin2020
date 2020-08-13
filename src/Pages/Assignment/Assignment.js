@@ -8,6 +8,7 @@ import {
 	Button,
 	Switch,
 	Row,
+	Form,
 } from 'antd';
 import { EditFilled, DeleteFilled, ReadFilled } from '@ant-design/icons';
 import AddNewAssignmentModal from 'Components/Modal/AddNewAssignmentModal';
@@ -37,7 +38,7 @@ const dummyAssignmentData = [
 		updatedAt: '2020-08-10 00:00:00.000000',
 	},
 	{
-		id: '1',
+		id: '2',
 		title: 'Tugas Kedua',
 		description: 'Tugas ini akan dikumpulkan via email',
 		thumbnail: '',
@@ -55,16 +56,22 @@ export default function Assignment() {
 	const [isFormModalVisible, openFormModal, closeFormModal] = useModal();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 
+	const [form] = Form.useForm();
+
 	function handleOpen() {
 		openFormModal();
 	}
 
 	function handleClose() {
 		closeFormModal();
+
+		form.resetFields();
 	}
 
 	function addNewAssignment() {
-		alert('Submitted');
+		form.validateFields().then((values) => {
+			console.log(values);
+		});
 	}
 
 	return (
@@ -79,6 +86,7 @@ export default function Assignment() {
 				<Table
 					dataSource={dummyAssignmentData}
 					pagination={{ position: ['bottomCenter'] }}
+					rowKey="id"
 				>
 					<Column title="Judul Tugas" dataIndex="title" key="title" />
 					<Column title="Kategori" dataIndex="category" key="category" />
@@ -95,7 +103,7 @@ export default function Assignment() {
 						title="Tampilkan"
 						dataIndex="publish_status"
 						key="publish_status"
-						render={(status) => <Switch loading checked={status} />}
+						render={(status) => <Switch loading={false} checked={status} />}
 					/>
 					<Column
 						title="Aksi"
@@ -118,6 +126,7 @@ export default function Assignment() {
 				addLoading={submitLoading}
 				handleCancel={handleClose}
 				handleSubmit={addNewAssignment}
+				formObject={form}
 			/>
 		</>
 	);
