@@ -1,6 +1,8 @@
 import { sha256 } from 'js-sha256';
 
-export function fetchGraphql({ url, headers, query, variables }) {
+const url = 'http://api.mpkmb.ipb.ac.id/graphql';
+
+export function fetchGraphql({ headers, query, variables }) {
 	const getUrl = new URL(url);
 	getUrl.searchParams.append('hash', sha256(query));
 	getUrl.searchParams.append('variables', JSON.stringify(variables));
@@ -8,11 +10,20 @@ export function fetchGraphql({ url, headers, query, variables }) {
 	const persistedConfig = {
 		method: 'GET',
 		headers: {
-			Accept: 'application/json',
 			'Content-Type': 'application/json',
 			...headers,
 		},
 	};
+
+	const normalConfig = {
+		method: 'POST',
+		headers: persistedConfig.headers,
+		body: JSON.stringify({
+			query,
+			variables,
+		}),
+	};
+
 	return new Promise((resolve, reject) => {
 		fetch(getUrl, persistedConfig)
 			.then((response) => {
@@ -21,18 +32,10 @@ export function fetchGraphql({ url, headers, query, variables }) {
 				return response.json();
 			})
 			.then((response) => {
-				resolve(response.data);
+				resolve(response);
 			})
 			.catch((e) => {
 				if (e.message === '400' || e.message === '405') {
-					const normalConfig = {
-						method: 'POST',
-						headers: persistedConfig.headers,
-						body: JSON.stringify({
-							query,
-							variables,
-						}),
-					};
 					fetch(new URL(url), normalConfig)
 						.then((response) => response.json())
 						.then((response) => {

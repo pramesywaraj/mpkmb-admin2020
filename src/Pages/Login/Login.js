@@ -1,12 +1,21 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { sha256 } from 'js-sha256';
+import Cookies from 'js-cookie';
 
 import './Login.scss';
 
 import useLoading from 'Hooks/useLoading';
+import { onLogin } from 'Service/Login';
 
-import { Form, Input, Button, Typography, Card } from 'antd';
+import {
+	Form,
+	Input,
+	Button,
+	Typography,
+	Card,
+	message as Message,
+} from 'antd';
 
 const { Title, Text, Link } = Typography;
 
@@ -23,23 +32,36 @@ export default function Login() {
 	const history = useHistory();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 
-	function handleLogin() {
+	async function handleLogin() {
 		showSubmitLoading();
 
 		let userData = {
 			...form.getFieldsValue(),
 		};
 
-		userData.password = sha256(userData.password);
+		const { email, password } = userData;
 
-		// setTimeout(() => {
-		// 	hideSubmitLoading();
-		// 	form.resetFields();
+		let hashedPass = sha256(password);
 
-		// 	localStorage.setItem('MPKMB_ADMIN_USER', values);
+		try {
+			// Destructure nested object
+			const {
+				Login: { Token },
+			} = await onLogin({ Email: email, Password: hashedPass });
 
-		// 	history.push('/admin');
-		// }, 1000);
+			Cookies.set('MPKMB_ADMIN_TOKEN', Token);
+
+			Message.success('Anda berhasil masuk');
+
+			setTimeout(() => {
+				history.push('/admin');
+			}, 1000);
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideSubmitLoading();
+		}
 	}
 
 	return (
