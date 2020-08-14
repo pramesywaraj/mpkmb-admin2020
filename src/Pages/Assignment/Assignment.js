@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-	Typography,
 	PageHeader,
 	Table,
 	Tag,
@@ -9,6 +8,7 @@ import {
 	Switch,
 	Row,
 	Form,
+	message as Message,
 } from 'antd';
 import { EditFilled, DeleteFilled, ReadFilled } from '@ant-design/icons';
 import AddNewAssignmentModal from 'Components/Modal/AddNewAssignmentModal';
@@ -16,47 +16,53 @@ import AddNewAssignmentModal from 'Components/Modal/AddNewAssignmentModal';
 import useModal from 'Hooks/useModal';
 import useLoading from 'Hooks/useLoading';
 
+import { getAssignmentList, addAssignment } from 'Service/Assignment';
 import { PENUGASAN, MATERI } from 'Constants/assignmentConst';
 
 import './Assignment.scss';
 
-const { Title } = Typography;
 const { Column } = Table;
 
-const dummyAssignmentData = [
-	{
-		id: '1',
-		title: 'Tugas Pertama',
-		description: 'Tugas ini akan dikumpulkan via email',
-		thumbnail: '',
-		url: 'www.google.com',
-		publish_status: true,
-		category: 'Tugas Pertama',
-		order: '',
-		type: 'PENUGASAN',
-		createdAt: '2020-08-10 00:00:00.000000',
-		updatedAt: '2020-08-10 00:00:00.000000',
-	},
-	{
-		id: '2',
-		title: 'Tugas Kedua',
-		description: 'Tugas ini akan dikumpulkan via email',
-		thumbnail: '',
-		url: 'www.google.com',
-		publish_status: true,
-		category: 'Tugas Kedua',
-		order: '',
-		type: 'MATERI',
-		createdAt: '2020-08-10 00:00:00.000000',
-		updatedAt: '2020-08-10 00:00:00.000000',
-	},
-];
-
 export default function Assignment() {
+	const [assignmentData, setAssignmentData] = useState([]);
+	const [pageProperty, setPageProperty] = useState({
+		page: 1,
+		dataCount: 1,
+	});
 	const [isFormModalVisible, openFormModal, closeFormModal] = useModal();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
+	const [fetchLoading, showFetchLoading, hideFetchLoading] = useLoading();
 
 	const [form] = Form.useForm();
+
+	async function getAssignment() {
+		showFetchLoading();
+
+		try {
+			const {
+				data: {
+					Contents: { DataCount, Data },
+				},
+			} = await getAssignmentList({ Page: pageProperty.page });
+
+			setAssignmentData([...Data]);
+			setPageProperty({
+				...pageProperty,
+				dataCount: DataCount,
+			});
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideFetchLoading();
+		}
+	}
+
+	useEffect(() => {
+		getAssignment();
+	}, []);
+
+	useEffect(() => {}, []);
 
 	function handleOpen() {
 		openFormModal();
@@ -64,13 +70,28 @@ export default function Assignment() {
 
 	function handleClose() {
 		closeFormModal();
-
 		form.resetFields();
 	}
 
+	function handleChangePage() {}
+
 	function addNewAssignment() {
-		form.validateFields().then((values) => {
-			console.log(values);
+		form.validateFields().then(async (values) => {
+			showSubmitLoading();
+			try {
+				const { data } = await addAssignment({ ...values });
+
+				getAssignment();
+
+				form.resetFields();
+				closeFormModal();
+				Message.success('Tugas/Materi berhasil ditambahkan');
+			} catch (e) {
+				const { message } = e;
+				Message.error(message);
+			} finally {
+				hideSubmitLoading();
+			}
 		});
 	}
 
@@ -84,16 +105,20 @@ export default function Assignment() {
 					</Button>
 				</Row>
 				<Table
-					dataSource={dummyAssignmentData}
-					pagination={{ position: ['bottomCenter'] }}
-					rowKey="id"
+					dataSource={assignmentData}
+					pagination={{
+						position: ['bottomCenter'],
+						total: pageProperty.dataCount,
+					}}
+					rowKey="Id"
+					loading={fetchLoading}
 				>
-					<Column title="Judul Tugas" dataIndex="title" key="title" />
-					<Column title="Kategori" dataIndex="category" key="category" />
+					<Column title="Judul Tugas" dataIndex="Title" key="Title" />
+					<Column title="Kategori" dataIndex="Category" key="Category" />
 					<Column
 						title="Tipe"
-						dataIndex="type"
-						key="type"
+						dataIndex="Type"
+						key="Type"
 						render={(type) => {
 							if (type === PENUGASAN) return <Tag color="blue">Penugasan</Tag>;
 							if (type === MATERI) return <Tag color="red">Materi</Tag>;
@@ -101,8 +126,8 @@ export default function Assignment() {
 					/>
 					<Column
 						title="Tampilkan"
-						dataIndex="publish_status"
-						key="publish_status"
+						dataIndex="PublishStatus"
+						key="PublishStatus"
 						render={(status) => <Switch loading={false} checked={status} />}
 					/>
 					<Column

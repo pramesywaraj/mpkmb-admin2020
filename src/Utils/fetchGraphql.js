@@ -1,6 +1,6 @@
 import { sha256 } from 'js-sha256';
 
-const url = 'http://api.mpkmb.ipb.ac.id/graphql';
+const url = process.env.REACT_APP_API_URL;
 
 export function fetchGraphql({ headers, query, variables }) {
 	const getUrl = new URL(url);
@@ -37,11 +37,14 @@ export function fetchGraphql({ headers, query, variables }) {
 			.catch((e) => {
 				if (e.message === '400' || e.message === '405') {
 					fetch(new URL(url), normalConfig)
-						.then((response) => response.json())
 						.then((response) => {
 							if (response.errors && response.errors.length > 0)
 								return reject(response.errors[0]);
-							resolve(response.data);
+							return response.json();
+						})
+						.then((response) => {
+							console.log(response);
+							resolve(response);
 						})
 						.catch((err) => {
 							reject(err);
