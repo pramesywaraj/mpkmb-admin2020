@@ -1,10 +1,21 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { sha256 } from 'js-sha256';
+import Cookies from 'js-cookie';
+
 import './Login.scss';
 
 import useLoading from 'Hooks/useLoading';
+import { onLogin } from 'Service/Login';
 
-import { Form, Input, Button, Typography, Card } from 'antd';
+import {
+	Form,
+	Input,
+	Button,
+	Typography,
+	Card,
+	message as Message,
+} from 'antd';
 
 const { Title, Text, Link } = Typography;
 
@@ -21,17 +32,36 @@ export default function Login() {
 	const history = useHistory();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 
-	function handleLogin(values) {
+	async function handleLogin() {
 		showSubmitLoading();
 
-		setTimeout(() => {
+		let userData = {
+			...form.getFieldsValue(),
+		};
+
+		const { email, password } = userData;
+
+		let hashedPass = sha256(password);
+
+		try {
+			// Destructure nested object
+			const {
+				Login: { Token },
+			} = await onLogin({ Email: email, Password: hashedPass });
+
+			Cookies.set('MPKMB_ADMIN_TOKEN', Token);
+
+			Message.success('Anda berhasil masuk');
+
+			setTimeout(() => {
+				history.push('/admin');
+			}, 1000);
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
 			hideSubmitLoading();
-			form.resetFields();
-
-			localStorage.setItem('MPKMB_ADMIN_USER', values);
-
-			history.push('/admin');
-		}, 1000);
+		}
 	}
 
 	return (
@@ -42,16 +72,13 @@ export default function Login() {
 					{...layout}
 					form={form}
 					name="basic"
-					initialValues={{ remember: true }}
 					className="login-form"
 					onFinish={handleLogin}
 				>
 					<Form.Item
-						label="Username"
-						name="username"
-						rules={[
-							{ required: true, message: 'Isi Username terlebih dahulu!' },
-						]}
+						label="Email"
+						name="email"
+						rules={[{ required: true, message: 'Isi Email terlebih dahulu!' }]}
 					>
 						<Input />
 					</Form.Item>
@@ -72,7 +99,6 @@ export default function Login() {
 							htmlType="submit"
 							block
 							loading={submitLoading}
-							onClick={handleLogin}
 						>
 							Submit
 						</Button>

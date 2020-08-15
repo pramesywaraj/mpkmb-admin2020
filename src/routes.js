@@ -2,6 +2,7 @@ import React from 'react';
 import { Router, Switch, Route, Redirect } from 'react-router-dom';
 import history from 'Utils/history';
 import PropTypes from 'prop-types';
+import Cookies from 'js-cookie';
 
 import LayoutBase from 'Components/Layout/LayoutBase';
 
@@ -41,7 +42,7 @@ export const ROUTES = [
 ];
 
 function CheckAuth(props) {
-	if (!localStorage.getItem('MPKMB_ADMIN_USER')) {
+	if (!Cookies.get('MPKMB_ADMIN_TOKEN')) {
 		alert('Anda harus login terlebih dahulu!');
 		return <Redirect to={'/'} />;
 	}
