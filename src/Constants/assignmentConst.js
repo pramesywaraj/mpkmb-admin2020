@@ -1,4 +1,4 @@
 // Enum
 
-export const PENUGASAN = 'PENUGASAN';
+export const PENUGASAN = 'TUGAS';
 export const MATERI = 'MATERI';

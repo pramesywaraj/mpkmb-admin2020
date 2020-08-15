@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, Select } from 'antd';
 
 const layout = {
 	layout: 'vertical',
 };
 
+const { Option } = Select;
+
 export default function AddNewAssignmentModal({
 	isVisible,
+	isEdit,
 	addLoading,
 	handleSubmit,
 	handleCancel,
@@ -19,9 +22,10 @@ export default function AddNewAssignmentModal({
 			visible={isVisible}
 			onOk={handleSubmit}
 			onCancel={handleCancel}
-			okText="Buat Baru"
+			okText={isEdit ? 'Simpan' : 'Buat Baru'}
 			cancelText="Batal"
 			confirmLoading={addLoading}
+			forceRender
 		>
 			<Form
 				{...layout}
@@ -35,7 +39,7 @@ export default function AddNewAssignmentModal({
 						marginBottom: '15px',
 					}}
 					label="Judul"
-					name="title"
+					name="Title"
 					rules={[{ required: true, message: 'Isi Judul terlebih dahulu!' }]}
 				>
 					<Input placeholder="Judul tugas/materi" />
@@ -44,8 +48,21 @@ export default function AddNewAssignmentModal({
 					style={{
 						marginBottom: '15px',
 					}}
+					label="Tipe"
+					name="Type"
+					rules={[{ required: true, message: 'Isi Tipe terlebih dahulu!' }]}
+				>
+					<Select style={{ width: '100%' }}>
+						<Option value="TUGAS">Penugasan</Option>
+						<Option value="MATERI">Materi</Option>
+					</Select>
+				</Form.Item>
+				<Form.Item
+					style={{
+						marginBottom: '15px',
+					}}
 					label="Deskripsi"
-					name="description"
+					name="Description"
 					rules={[
 						{ required: true, message: 'Isi Deskripsi terlebih dahulu!' },
 					]}
@@ -60,7 +77,7 @@ export default function AddNewAssignmentModal({
 						marginBottom: '15px',
 					}}
 					label="Thumbnail Tugas/Materi"
-					name="thumbnail"
+					name="Thumbnail"
 					rules={[
 						{
 							required: true,
@@ -75,7 +92,7 @@ export default function AddNewAssignmentModal({
 						marginBottom: '15px',
 					}}
 					label="Link Tugas/Materi"
-					name="url"
+					name="Url"
 					rules={[
 						{
 							required: true,
@@ -90,7 +107,7 @@ export default function AddNewAssignmentModal({
 						marginBottom: '15px',
 					}}
 					label="Kategori"
-					name="category"
+					name="Category"
 					rules={[
 						{
 							required: true,
@@ -107,6 +124,7 @@ export default function AddNewAssignmentModal({
 
 AddNewAssignmentModal.propTypes = {
 	isVisible: PropTypes.bool.isRequired,
+	isEdit: PropTypes.bool.isRequired,
 	addLoading: PropTypes.bool.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	handleCancel: PropTypes.func.isRequired,
