@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
 	PageHeader,
 	Table,
@@ -37,9 +37,10 @@ const { Column } = Table;
 const { confirm } = Modal;
 
 export default function Assignment() {
+	const [firstLoad, setFirstLoad] = useState(true);
 	const [assignmentData, setAssignmentData] = useState([]);
 	const [pageProperty, setPageProperty] = useState({
-		page: 1,
+		current: 1,
 		dataCount: 1,
 	});
 	const [isEdit, setIsEdit] = useState(false);
@@ -60,7 +61,9 @@ export default function Assignment() {
 				data: {
 					Contents: { DataCount, Data },
 				},
-			} = await getAssignmentList({ Page: pageProperty.page });
+			} = await getAssignmentList({ Page: pageProperty.current });
+
+			if (firstLoad) setFirstLoad(false);
 
 			setAssignmentData([...Data]);
 			setPageProperty({
@@ -79,7 +82,11 @@ export default function Assignment() {
 		getAssignment();
 	}, []);
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		if (firstLoad) return;
+
+		getAssignment();
+	}, [pageProperty.current, setPageProperty]);
 
 	function handleOpen() {
 		openFormModal();
@@ -92,7 +99,12 @@ export default function Assignment() {
 		form.resetFields();
 	}
 
-	function handleChangePage() {}
+	function handleChangePage(page) {
+		setPageProperty({
+			...pageProperty,
+			current: page,
+		});
+	}
 
 	function handleEdit(assignment) {
 		setSelectedAssignment(assignment);
@@ -209,7 +221,9 @@ export default function Assignment() {
 					dataSource={assignmentData}
 					pagination={{
 						position: ['bottomCenter'],
+						current: pageProperty.current,
 						total: pageProperty.dataCount,
+						onChange: handleChangePage,
 					}}
 					rowKey="Id"
 					loading={fetchLoading}
