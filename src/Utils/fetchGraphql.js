@@ -38,12 +38,11 @@ export function fetchGraphql({ headers, query, variables }) {
 				if (e.message === '400' || e.message === '405') {
 					fetch(new URL(url), normalConfig)
 						.then((response) => {
-							if (response.errors && response.errors.length > 0)
-								return reject(response.errors[0]);
 							return response.json();
 						})
 						.then((response) => {
-							console.log(response);
+							if (response.errors && response.errors.length > 0)
+								return reject(response.errors[0]);
 							resolve(response);
 						})
 						.catch((err) => {

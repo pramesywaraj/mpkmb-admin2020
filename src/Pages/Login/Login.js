@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { sha256 } from 'js-sha256';
 import Cookies from 'js-cookie';
@@ -32,6 +32,10 @@ export default function Login() {
 	const history = useHistory();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 
+	useEffect(() => {
+		if (Cookies.get('MPKMB_ADMIN_TOKEN')) history.push('/admin');
+	}, []);
+
 	async function handleLogin() {
 		showSubmitLoading();
 
@@ -46,7 +50,7 @@ export default function Login() {
 		try {
 			// Destructure nested object
 			const {
-				Login: { Token },
+				data: { Login: Token },
 			} = await onLogin({ Email: email, Password: hashedPass });
 
 			Cookies.set('MPKMB_ADMIN_TOKEN', Token);

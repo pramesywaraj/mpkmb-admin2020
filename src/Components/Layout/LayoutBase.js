@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useHistory } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import 'antd/dist/antd.css';
 import { Layout, Menu, Typography } from 'antd';
 
@@ -41,7 +42,7 @@ export default function LayoutBase({ children }) {
 	}
 
 	function onLogout() {
-		localStorage.removeItem('MPKMB_ADMIN_USER');
+		Cookies.remove('MPKMB_ADMIN_TOKEN');
 
 		setTimeout(() => {
 			alert('Anda telah keluar dari aplikasi ini.');

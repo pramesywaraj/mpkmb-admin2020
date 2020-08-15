@@ -1,6 +1,8 @@
 import { fetchGraphql } from 'Utils/fetchGraphql';
 import Cookies from 'js-cookie';
 
+const token = Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token;
+
 export function getAssignmentList({ Page, Limit = 10 }) {
 	const query = `
     query (
@@ -41,7 +43,7 @@ export function getAssignmentList({ Page, Limit = 10 }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `bearer ${Cookies.get('MPKMB_ADMIN_TOKEN')}`,
+			Authorization: `${token}`,
 		},
 		query,
 		variables: {
@@ -99,7 +101,7 @@ export function addAssignment({
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `bearer ${Cookies.get('MPKMB_ADMIN_TOKEN')}`,
+			Authorization: `${token}`,
 		},
 		query,
 		variables: {
@@ -111,6 +113,123 @@ export function addAssignment({
 			Type,
 			PublishStatus: true,
 			Order: null,
+		},
+	});
+
+	return res;
+}
+
+export function editAssignment({
+	Id,
+	Title,
+	Description,
+	Thumbnail,
+	Url,
+	Category,
+	Type,
+}) {
+	const query = `
+    mutation (
+      $Id: String!,
+      $Title: String, 
+      $Description: String, 
+      $Thumbnail: String, 
+      $Url: String,
+      $PublishStatus: Boolean, 
+      $Category: String, 
+      $Type: String, 
+      $Order: Int
+    ) {
+      UpdateContent(
+        Id: $Id,
+        Title: $Title, 
+        Description: $Description,
+        Thumbnail: $Thumbnail,
+        Url: $Url,
+        PublishStatus: $PublishStatus, 
+        Category: $Category, 
+        Type: $Type,
+        Order: $Order
+      ) {
+        Id
+        Title
+        Description
+        Thumbnail
+        Url
+        PublishStatus
+        Category
+        Type
+        Order
+      }
+    }  
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${token}`,
+		},
+		query,
+		variables: {
+			Id,
+			Title,
+			Description,
+			Thumbnail,
+			Url,
+			Category,
+			Type,
+			Order: null,
+		},
+	});
+
+	return res;
+}
+
+export function switchPublish({ Id, PublishStatus }) {
+	const query = `
+    mutation (
+      $Id: String!,
+      $PublishStatus: Boolean, 
+    ) {
+      UpdateContent(
+        Id: $Id,
+        PublishStatus: $PublishStatus, 
+      ) {
+        Id
+        PublishStatus
+      }
+    }  
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${token}`,
+		},
+		query,
+		variables: {
+			Id,
+			PublishStatus,
+		},
+	});
+
+	return res;
+}
+
+export function deleteAssignment({ Id }) {
+	const query = `
+    mutation ($Id: String!) {
+      DeleteContent(Id: $Id) {
+        message
+      }
+    }  
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${token}`,
+		},
+		query,
+		variables: {
+			Id,
 		},
 	});
 

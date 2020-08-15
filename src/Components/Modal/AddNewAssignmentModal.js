@@ -10,6 +10,7 @@ const { Option } = Select;
 
 export default function AddNewAssignmentModal({
 	isVisible,
+	isEdit,
 	addLoading,
 	handleSubmit,
 	handleCancel,
@@ -21,9 +22,10 @@ export default function AddNewAssignmentModal({
 			visible={isVisible}
 			onOk={handleSubmit}
 			onCancel={handleCancel}
-			okText="Buat Baru"
+			okText={isEdit ? 'Simpan' : 'Buat Baru'}
 			cancelText="Batal"
 			confirmLoading={addLoading}
+			forceRender
 		>
 			<Form
 				{...layout}
@@ -122,6 +124,7 @@ export default function AddNewAssignmentModal({
 
 AddNewAssignmentModal.propTypes = {
 	isVisible: PropTypes.bool.isRequired,
+	isEdit: PropTypes.bool.isRequired,
 	addLoading: PropTypes.bool.isRequired,
 	handleSubmit: PropTypes.func.isRequired,
 	handleCancel: PropTypes.func.isRequired,
