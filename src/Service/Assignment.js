@@ -1,8 +1,7 @@
 import { fetchGraphql } from 'Utils/fetchGraphql';
 import Cookies from 'js-cookie';
 
-const token = Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token;
-
+const token = Cookies.getJSON('MPKMB_ADMIN_TOKEN');
 export function getAssignmentList({ Page, Limit = 10 }) {
 	const query = `
     query (
@@ -43,7 +42,7 @@ export function getAssignmentList({ Page, Limit = 10 }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${token.Token}`,
 		},
 		query,
 		variables: {
@@ -101,7 +100,7 @@ export function addAssignment({
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${token.Token}`,
 		},
 		query,
 		variables: {
@@ -166,7 +165,7 @@ export function editAssignment({
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${token.Token}`,
 		},
 		query,
 		variables: {
@@ -202,7 +201,7 @@ export function switchPublish({ Id, PublishStatus }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${token.Token}`,
 		},
 		query,
 		variables: {
@@ -225,7 +224,7 @@ export function deleteAssignment({ Id }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${token.Token}`,
 		},
 		query,
 		variables: {

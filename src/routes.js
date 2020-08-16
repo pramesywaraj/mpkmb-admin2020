@@ -9,6 +9,7 @@ import LayoutBase from 'Components/Layout/LayoutBase';
 import Login from 'Pages/Login/Login';
 import Dashboard from 'Pages/Dashboard/Dashboard';
 import Assignment from 'Pages/Assignment/Assignment';
+import User from 'Pages/User/User';
 
 export const ROUTES = [
 	{
@@ -36,6 +37,13 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: Assignment,
+			},
+			{
+				path: '/admin/pengguna',
+				key: 'USER',
+				exact: true,
+				layout: true,
+				component: User,
 			},
 		],
 	},

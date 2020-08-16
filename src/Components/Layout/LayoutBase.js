@@ -5,7 +5,12 @@ import Cookies from 'js-cookie';
 import 'antd/dist/antd.css';
 import { Layout, Menu, Typography } from 'antd';
 
-import { HomeFilled, ReadFilled, LogoutOutlined } from '@ant-design/icons';
+import {
+	HomeFilled,
+	ReadFilled,
+	LogoutOutlined,
+	UserOutlined,
+} from '@ant-design/icons';
 
 import './LayoutBase.scss';
 import MainLogo from 'Assets/logo.svg';
@@ -26,6 +31,12 @@ const menuItems = [
 		route: '/penugasan',
 		name: 'Penugasan',
 		icon: <ReadFilled />,
+	},
+	{
+		id: '3',
+		route: '/pengguna',
+		name: 'Pengguna',
+		icon: <UserOutlined />,
 	},
 ];
 
