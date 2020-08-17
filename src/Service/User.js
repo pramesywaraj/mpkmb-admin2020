@@ -14,11 +14,14 @@ export function getUserList({ Page, Limit = 10 }) {
         Limit: $Limit,
         Page: $Page, 
       ) {
+        Data {
           Id
           Name
           Email
           IsActive
         }
+        DataCount
+      }
     }  
   `;
 
@@ -139,15 +142,18 @@ export function switchIsActive({ Id, IsActive }) {
 	return res;
 }
 
-export function UpdateUserPassword({ OldPassword, NewPassword }) {
+export async function UpdateUserPassword({ OldPassword, NewPassword }) {
+  const hashedOldPass = await sha256(OldPassword);
+  const hashedNewPass = await sha256(NewPassword);
+
 	const query = `
     mutation (
       $OldPassword: String!,
       $NewPassword: String!, 
     ) {
         UpdateUserPassword(
-        OldPassword: $OldPassword,
-        NewPassword: $NewPassword, 
+          OldPassword: $OldPassword,
+          NewPassword: $NewPassword, 
       ) {
         Id
         Name
@@ -159,12 +165,12 @@ export function UpdateUserPassword({ OldPassword, NewPassword }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${token.Token}`,
 		},
 		query,
 		variables: {
-			OldPassword,
-			NewPassword,
+			OldPassword: hashedOldPass,
+			NewPassword: hashedNewPass,
 		},
 	});
 

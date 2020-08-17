@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import {
 	PageHeader,
 	Table,
@@ -14,9 +16,11 @@ import {
 	EditFilled,
 	// DeleteFilled,
 	UserAddOutlined,
+	KeyOutlined,
 	// ExclamationCircleOutlined,
 } from '@ant-design/icons';
 import UserModal from 'Components/Modal/UserModal';
+import './User.scss';
 
 import useModal from 'Hooks/useModal';
 import useLoading from 'Hooks/useLoading';
@@ -26,20 +30,22 @@ import {
 	getUserList,
 	editUserProfile,
 	switchIsActive,
+	UpdateUserPassword,
 } from 'Service/User';
 
 const { Column } = Table;
 // const { confirm } = Modal;
 
-export default function Assignment() {
+export default function User() {
+	const history = useHistory();
 	const [firstLoad, setFirstLoad] = useState(true);
 	const [userData, setUserData] = useState([]);
 	const [pageProperty, setPageProperty] = useState({
 		current: 1,
 		dataCount: 1,
 	});
-	const [isEdit, setIsEdit] = useState(false);
-	const [selectedAssignment, setSelectedAssignment] = useState(null);
+	const [modalType, setModalType] = useState('');
+	const [selectedUser, setSelectedUser] = useState(null);
 
 	const [isFormModalVisible, openFormModal, closeFormModal] = useModal();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
@@ -53,15 +59,17 @@ export default function Assignment() {
 
 		try {
 			const {
-				data: { Users },
+				data: {
+					Users: { DataCount, Data },
+				},
 			} = await getUserList({ Page: pageProperty.current });
 
 			if (firstLoad) setFirstLoad(false);
 
-			setUserData([...Users]);
+			setUserData([...Data]);
 			setPageProperty({
 				...pageProperty,
-				dataCount: 100,
+				dataCount: DataCount,
 			});
 		} catch (e) {
 			const { message } = e;
@@ -85,13 +93,6 @@ export default function Assignment() {
 		openFormModal();
 	}
 
-	function handleClose() {
-		if (isEdit) setIsEdit(false);
-
-		closeFormModal();
-		form.resetFields();
-	}
-
 	function handleChangePage(page) {
 		setPageProperty({
 			...pageProperty,
@@ -99,24 +100,44 @@ export default function Assignment() {
 		});
 	}
 
+	function handleClose() {
+		if (modalType !== '') setModalType('');
+
+		closeFormModal();
+		form.resetFields();
+	}
+
 	function handleEdit(user) {
-		setSelectedAssignment(user);
-		setIsEdit(true);
+		setSelectedUser(user);
+		setModalType('edit');
 
 		form.setFieldsValue(user);
 
 		openFormModal();
 	}
 
+	function handleSetPassword() {
+		setModalType('setPassword');
+		openFormModal();
+	}
+
 	function handleSubmit() {
 		form.validateFields().then((values) => {
-			if (isEdit) {
+			if (modalType === 'edit') {
 				let tempVal = {
-					...selectedAssignment,
+					...selectedUser,
 					...values,
 				};
 
 				return editExistingUser(tempVal);
+			}
+
+			if (modalType === 'setPassword') {
+				let tempVal = {
+					...values,
+				};
+
+				return updatePasswordUser(tempVal);
 			}
 
 			return addNewUser(values);
@@ -143,7 +164,7 @@ export default function Assignment() {
 			await switchIsActive({ Id, IsActive: !IsActive });
 			getUser();
 
-			Message.success('Status Tugas/Materi berhasil diubah');
+			Message.success('Pengguna berhasil diubah');
 		} catch (e) {
 			const { message } = e;
 			Message.error(message);
@@ -161,7 +182,7 @@ export default function Assignment() {
 
 			form.resetFields();
 			closeFormModal();
-			Message.success('Tugas/Materi berhasil ditambahkan');
+			Message.success('Pengguna berhasil ditambahkan');
 		} catch (e) {
 			const { message } = e;
 			Message.error(message);
@@ -179,7 +200,26 @@ export default function Assignment() {
 
 			form.resetFields();
 			closeFormModal();
-			Message.success('Tugas/Materi berhasil diubah');
+			Message.success('Pengguna berhasil diubah');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideSubmitLoading();
+		}
+	}
+
+	async function updatePasswordUser(values) {
+		showSubmitLoading();
+		try {
+			await UpdateUserPassword({ ...values });
+
+			getUser();
+
+			form.resetFields();
+			closeFormModal();
+			Message.success('Password anda berhasil diubah');
+			onLogout();
 		} catch (e) {
 			const { message } = e;
 			Message.error(message);
@@ -200,17 +240,35 @@ export default function Assignment() {
 	// 	}
 	// }
 
+	function onLogout() {
+		Cookies.remove('MPKMB_ADMIN_TOKEN');
+
+		setTimeout(() => {
+			alert('Anda telah mengganti password silahkan login ulang');
+			history.push('/');
+		});
+	}
+
 	return (
 		<>
 			<PageHeader title="Menejemen Pengguna" />
 			<div className="assignment-table-container">
 				<Row className="assignment-add-container" align="middle" justify="end">
 					<Button
+						className="mr-5"
 						type="primary"
 						icon={<UserAddOutlined />}
 						onClick={handleOpen}
 					>
 						Tambah Pengguna
+					</Button>
+					<Button
+						danger
+						type="primary"
+						icon={<KeyOutlined />}
+						onClick={() => handleSetPassword()}
+					>
+						Ganti Password Anda
 					</Button>
 				</Row>
 				<Table
@@ -233,12 +291,9 @@ export default function Assignment() {
 						render={(text, record) => (
 							<Switch
 								loading={switchLoading}
-								checked={record.IsActive === 'false' ? false : true}
+								checked={record.IsActive}
 								onChange={() => {
-									handleChangeStatus(
-										record.Id,
-										record.IsActive === 'false' ? false : true
-									);
+									handleChangeStatus(record.Id, record.IsActive);
 								}}
 							/>
 						)}
@@ -255,14 +310,6 @@ export default function Assignment() {
 								>
 									Sunting
 								</Button>
-								{/* <Button
-									danger
-									type="primary"
-									icon={<DeleteFilled />}
-									onClick={() => handleDelete(record.Id)}
-								>
-									Hapus
-								</Button> */}
 							</Space>
 						)}
 					/>
@@ -270,7 +317,7 @@ export default function Assignment() {
 			</div>
 			<UserModal
 				isVisible={isFormModalVisible}
-				isEdit={isEdit}
+				modalType={modalType}
 				addLoading={submitLoading}
 				handleCancel={handleClose}
 				handleSubmit={handleSubmit}

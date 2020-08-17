@@ -53,7 +53,7 @@ export default function Login() {
 				data: { Login: Token },
 			} = await onLogin({ Email: email, Password: hashedPass });
 
-			Cookies.set('MPKMB_ADMIN_TOKEN', Token);
+			await Cookies.set('MPKMB_ADMIN_TOKEN', Token);
 
 			Message.success('Anda berhasil masuk');
 
