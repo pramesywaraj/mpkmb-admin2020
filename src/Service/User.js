@@ -2,8 +2,6 @@ import { fetchGraphql } from 'Utils/fetchGraphql';
 import { sha256 } from 'js-sha256';
 import Cookies from 'js-cookie';
 
-const token = Cookies.getJSON('MPKMB_ADMIN_TOKEN');
-
 export function getUserList({ Page, Limit = 10 }) {
 	const query = `
     query (
@@ -27,7 +25,7 @@ export function getUserList({ Page, Limit = 10 }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token.Token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -64,7 +62,7 @@ export function addUser({ Name, Email, Password }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token.Token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -99,7 +97,7 @@ export function editUserProfile({ Id, Name, Email }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token.Token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -130,7 +128,7 @@ export function switchIsActive({ Id, IsActive }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token.Token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -165,7 +163,7 @@ export async function UpdateUserPassword({ OldPassword, NewPassword }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token.Token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
