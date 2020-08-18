@@ -10,6 +10,7 @@ import Login from 'Pages/Login/Login';
 import Dashboard from 'Pages/Dashboard/Dashboard';
 import Assignment from 'Pages/Assignment/Assignment';
 import User from 'Pages/User/User';
+import Timeline from 'Pages/Timeline/Timeline';
 
 export const ROUTES = [
 	{
@@ -44,6 +45,13 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: User,
+			},
+			{
+				path: '/admin/timeline',
+				key: 'TIMELINE',
+				exact: true,
+				layout: true,
+				component: Timeline,
 			},
 		],
 	},

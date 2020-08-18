@@ -10,6 +10,7 @@ import {
 	ReadFilled,
 	LogoutOutlined,
 	UserOutlined,
+	CalendarFilled,
 } from '@ant-design/icons';
 
 import './LayoutBase.scss';
@@ -37,6 +38,12 @@ const menuItems = [
 		route: '/pengguna',
 		name: 'Pengguna',
 		icon: <UserOutlined />,
+	},
+	{
+		id: '4',
+		route: '/timeline',
+		name: 'Timeline',
+		icon: <CalendarFilled />,
 	},
 ];
 
