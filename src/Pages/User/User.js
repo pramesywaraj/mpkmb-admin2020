@@ -91,6 +91,7 @@ export default function User() {
 
 	function handleOpen() {
 		openFormModal();
+		setModalType('new');
 	}
 
 	function handleChangePage(page) {
