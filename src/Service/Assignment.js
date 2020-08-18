@@ -1,8 +1,6 @@
 import { fetchGraphql } from 'Utils/fetchGraphql';
 import Cookies from 'js-cookie';
 
-const token = Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token;
-
 export function getAssignmentList({ Page, Limit = 10 }) {
 	const query = `
     query (
@@ -43,7 +41,7 @@ export function getAssignmentList({ Page, Limit = 10 }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -101,7 +99,7 @@ export function addAssignment({
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -166,7 +164,7 @@ export function editAssignment({
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -202,7 +200,7 @@ export function switchPublish({ Id, PublishStatus }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
@@ -225,7 +223,7 @@ export function deleteAssignment({ Id }) {
 
 	const res = fetchGraphql({
 		headers: {
-			Authorization: `${token}`,
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
