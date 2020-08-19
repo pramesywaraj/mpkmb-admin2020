@@ -50,7 +50,7 @@ export default function User() {
 	const [isFormModalVisible, openFormModal, closeFormModal] = useModal();
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 	const [fetchLoading, showFetchLoading, hideFetchLoading] = useLoading();
-	const [switchLoading, showSwitchLoading, hideSwitchLoading] = useLoading();
+	const [switchLoading, setSwitchLoading] = useState('');
 
 	const [form] = Form.useForm();
 
@@ -160,7 +160,7 @@ export default function User() {
 	// }
 
 	async function handleChangeStatus(Id, IsActive) {
-		showSwitchLoading();
+		setSwitchLoading(Id);
 		try {
 			await switchIsActive({ Id, IsActive: !IsActive });
 			getUser();
@@ -170,7 +170,7 @@ export default function User() {
 			const { message } = e;
 			Message.error(message);
 		} finally {
-			hideSwitchLoading();
+			setSwitchLoading('');
 		}
 	}
 
@@ -291,7 +291,7 @@ export default function User() {
 						key="IsActive"
 						render={(text, record) => (
 							<Switch
-								loading={switchLoading}
+								loading={switchLoading === record.Id}
 								checked={record.IsActive}
 								onChange={() => {
 									handleChangeStatus(record.Id, record.IsActive);
