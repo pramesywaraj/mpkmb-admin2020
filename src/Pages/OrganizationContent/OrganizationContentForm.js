@@ -15,6 +15,7 @@ import {
 	Input,
 	Divider,
 	Button,
+	Select,
 	message as Message,
 } from 'antd';
 import {} from '@ant-design/icons';
@@ -125,6 +126,21 @@ export default function OrganizationContentForm() {
 					<Form.Item name="Title" label="Judul" rules={[{ required: true }]}>
 						<Input />
 					</Form.Item>
+					<Form.Item
+						style={{
+							marginBottom: '15px',
+						}}
+						label="Kategori"
+						name="Category"
+						rules={[
+							{ required: true, message: 'Isi Kategori terlebih dahulu!' },
+						]}
+					>
+						<Select style={{ width: '100%' }}>
+							<Select.Option value="UKM">UKM</Select.Option>
+							<Select.Option value="COMMUNITY">Ormawa</Select.Option>
+						</Select>
+					</Form.Item>
 					<div style={{ display: 'flex' }}>
 						<Form.Item
 							style={{
@@ -153,7 +169,7 @@ export default function OrganizationContentForm() {
 						label="Deskripsi"
 						// rules={[{ required: true }]}
 					>
-						<Input.TextArea />
+						<Input.TextArea rows={6} />
 					</Form.Item>
 
 					<RichTextEditor
@@ -179,7 +195,7 @@ export default function OrganizationContentForm() {
 								display: 'inline-block',
 								width: 'calc(48% - 12px)',
 							}}
-							name="FileUrl"
+							name="UrlFile"
 							label="File Link"
 						>
 							<Input />
@@ -241,7 +257,7 @@ export default function OrganizationContentForm() {
 								width: 'calc(48% - 12px)',
 								marginRight: 'auto',
 							}}
-							name="EmailUrl"
+							name="Email"
 							label="Email"
 						>
 							<Input />

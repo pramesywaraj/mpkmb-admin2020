@@ -20,10 +20,11 @@ function RichTextEditor({ textValue, onTextChange }) {
 				editorClassName="demo-editor"
 				wrapperStyle={{
 					minHeight: 500,
+					border: '1px solid #e0e0e0',
 				}}
 				editorStyle={{
-					minHeight: 376,
-					border: '1px solid #F1F1F1',
+					minHeight: 490,
+					border: '1px solid #e0e0e0',
 					padding: 5,
 					borderRadius: 2,
 					height: 'auto',

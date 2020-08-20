@@ -120,7 +120,7 @@ export default function OrganizationContent() {
 			await deleteOrganizationContent({ Id });
 			getData();
 
-			Message.success('Tugas/Materi berhasil dihapus');
+			Message.success('Konten Organisasi berhasil dihapus');
 		} catch (e) {
 			const { message } = e;
 			Message.error(message);

@@ -1,4 +1,5 @@
 import { fetchGraphql } from 'Utils/fetchGraphql';
+import { mutationGraphql } from 'Utils/mutationGraphql';
 import Cookies from 'js-cookie';
 
 export function getOrganizationContentList({ Page, Limit = 10 }) {
@@ -22,19 +23,22 @@ export function getOrganizationContentList({ Page, Limit = 10 }) {
         Category: $Category,
       ) {
         Data {
-            Id
-            Title
-            Subtitle
-            Thumbnail
-            Article
-            Url
-            LineUrl
-            TwitterUrl
-            YoutubeUrl
-            InstagramUrl
-            Category
-            PublishStatus
-            Order
+          Id
+          Title
+          Subtitle
+          Description
+          Thumbnail
+          Article
+          Url
+          UrlFile
+          LineUrl
+          TwitterUrl
+          YoutubeUrl
+          InstagramUrl
+          Email
+          Category
+          PublishStatus
+          Order
         }
         DataCount
       }
@@ -58,29 +62,34 @@ export function getOrganizationContentList({ Page, Limit = 10 }) {
 }
 
 export function addOrganizationContent({
-	Id,
 	Title,
 	Subtitle,
+	Description,
 	Thumbnail,
 	Article,
 	Url,
+	UrlFile,
 	LineUrl,
 	TwitterUrl,
 	YoutubeUrl,
 	InstagramUrl,
+	Email,
 	Category,
 }) {
 	const query = `
     mutation (
         $Title: String!,
         $Subtitle: String,
+        $Description: String,
         $Thumbnail: String,
         $Article: String,
         $Url: String,
+        $UrlFile: String,
         $LineUrl: String,
         $TwitterUrl: String,
         $YoutubeUrl: String,
         $InstagramUrl: String,
+        $Email: String,
         $Category: String!,
         $PublishStatus: Boolean,
         $Order: Int,
@@ -88,13 +97,16 @@ export function addOrganizationContent({
 	CreateOrganizationContent (
         Title: $Title,
         Subtitle: $Subtitle,
+        Description: $Description,
         Thumbnail: $Thumbnail,
         Article: $Article,
         Url: $Url,
+        UrlFile: $UrlFile,
         LineUrl: $LineUrl,
         TwitterUrl: $TwitterUrl,
         YoutubeUrl: $YoutubeUrl,
         InstagramUrl: $InstagramUrl,
+        Email: $Email,
         Category: $Category,
         PublishStatus: $PublishStatus,
         Order: $Order,
@@ -102,13 +114,16 @@ export function addOrganizationContent({
         Id
         Title
         Subtitle
+        Description
         Thumbnail
         Article
         Url
+        UrlFile
         LineUrl
         TwitterUrl
         YoutubeUrl
         InstagramUrl
+        Email
         Category
         PublishStatus
         Order
@@ -116,23 +131,25 @@ export function addOrganizationContent({
     }  
   `;
 
-	const res = fetchGraphql({
+	const res = mutationGraphql({
 		headers: {
 			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
 		query,
 		variables: {
-			Id,
 			Title,
 			Subtitle,
+			Description,
 			Thumbnail,
 			Article,
 			Url,
+			UrlFile,
 			LineUrl,
 			TwitterUrl,
 			YoutubeUrl,
 			InstagramUrl,
-			Category: 'UKM',
+			Email,
+			Category,
 			PublishStatus: false,
 			Order: null,
 		},
@@ -145,13 +162,16 @@ export function editOrganizationContent({
 	Id,
 	Title,
 	Subtitle,
+	Description,
 	Thumbnail,
 	Article,
 	Url,
+	UrlFile,
 	LineUrl,
 	TwitterUrl,
 	YoutubeUrl,
 	InstagramUrl,
+	Email,
 	Category,
 	PublishStatus,
 	Order,
@@ -159,16 +179,19 @@ export function editOrganizationContent({
 	const query = `
     mutation (
       $Id: String!,
-      $Title: String!,
+      $Title: String,
       $Subtitle: String,
+      $Description: String,
       $Thumbnail: String,
       $Article: String,
       $Url: String,
+      $UrlFile: String,
       $LineUrl: String,
       $TwitterUrl: String,
       $YoutubeUrl: String,
       $InstagramUrl: String,
-      $Category: String!,
+      $Email: String,
+      $Category: String,
       $PublishStatus: Boolean,
       $Order: Int,
     ) {
@@ -176,13 +199,16 @@ export function editOrganizationContent({
         Id: $Id,
         Title: $Title,
         Subtitle: $Subtitle,
+        Description: $Description,
         Thumbnail: $Thumbnail,
         Article: $Article,
         Url: $Url,
+        UrlFile: $UrlFile,
         LineUrl: $LineUrl,
         TwitterUrl: $TwitterUrl,
         YoutubeUrl: $YoutubeUrl,
         InstagramUrl: $InstagramUrl,
+        Email: $Email,
         Category: $Category,
         PublishStatus: $PublishStatus,
         Order: $Order,
@@ -190,13 +216,16 @@ export function editOrganizationContent({
         Id
         Title
         Subtitle
+        Description
         Thumbnail
         Article
         Url
+        UrlFile
         LineUrl
         TwitterUrl
         YoutubeUrl
         InstagramUrl
+        Email
         Category
         PublishStatus
         Order
@@ -204,7 +233,7 @@ export function editOrganizationContent({
     }  
   `;
 
-	const res = fetchGraphql({
+	const res = mutationGraphql({
 		headers: {
 			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
 		},
@@ -213,13 +242,16 @@ export function editOrganizationContent({
 			Id,
 			Title,
 			Subtitle,
+			Description,
 			Thumbnail,
 			Article,
 			Url,
+			UrlFile,
 			LineUrl,
 			TwitterUrl,
 			YoutubeUrl,
 			InstagramUrl,
+			Email,
 			Category,
 			PublishStatus,
 			Order: Order,
