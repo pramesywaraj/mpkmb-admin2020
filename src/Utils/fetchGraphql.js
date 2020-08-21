@@ -5,7 +5,7 @@ const url = process.env.REACT_APP_API_URL;
 export function fetchGraphql({ headers, query, variables }) {
 	const getUrl = new URL(url);
 	getUrl.searchParams.append('hash', sha256(query));
-	getUrl.searchParams.append('variables', JSON.stringify(variables));
+	// getUrl.searchParams.append('variables', JSON.stringify(variables));
 
 	const persistedConfig = {
 		method: 'GET',

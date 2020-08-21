@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import 'antd/dist/antd.css';
 import { Layout, Menu, Typography } from 'antd';
@@ -10,6 +10,7 @@ import {
 	ReadFilled,
 	LogoutOutlined,
 	UserOutlined,
+	CalendarFilled,
 	GlobalOutlined,
 } from '@ant-design/icons';
 
@@ -22,26 +23,27 @@ const { Text, Link } = Typography;
 
 const menuItems = [
 	{
-		id: '1',
-		route: '/',
+		route: '/admin',
 		name: 'Dashboard',
 		icon: <HomeFilled />,
 	},
 	{
-		id: '2',
-		route: '/penugasan',
+		route: '/admin/penugasan',
 		name: 'Penugasan',
 		icon: <ReadFilled />,
 	},
 	{
-		id: '3',
-		route: '/pengguna',
+		route: '/admin/pengguna',
 		name: 'Pengguna',
 		icon: <UserOutlined />,
 	},
 	{
-		id: '4',
-		route: '/ukm-ormawa',
+		route: '/admin/timeline',
+		name: 'Timeline',
+		icon: <CalendarFilled />,
+  },
+  {		
+    route: '/admin/ukm-ormawa',
 		name: 'UKM & Ormawa',
 		icon: <GlobalOutlined />,
 	},
@@ -49,14 +51,20 @@ const menuItems = [
 
 export default function LayoutBase({ children }) {
 	const [collapsed, setCollapsed] = useState(false);
+	const [selected, setSelected] = useState('1');
 	const history = useHistory();
+	const location = useLocation();
+
+	useEffect(() => {
+		setSelected(location.pathname);
+	});
 
 	function onCollapsed(collapsed) {
 		setCollapsed(collapsed);
 	}
 
-	function onGoTo(route) {
-		history.push(`/admin${route}`);
+	function onGoTo(key, route) {
+		history.push(route);
 	}
 
 	function onLogout() {
@@ -74,9 +82,13 @@ export default function LayoutBase({ children }) {
 				<div className="layout-logo">
 					<img src={MainLogo} alt="Logo MPKMB 2020" />
 				</div>
-				<Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-					{menuItems.map(({ id, icon, name, route }) => (
-						<Menu.Item key={id} icon={icon} onClick={() => onGoTo(route)}>
+				<Menu theme="dark" selectedKeys={[selected]} mode="inline">
+					{menuItems.map(({ icon, name, route }) => (
+						<Menu.Item
+							key={route}
+							icon={icon}
+							onClick={({ key }) => onGoTo(key, route)}
+						>
 							{name}
 						</Menu.Item>
 					))}
