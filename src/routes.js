@@ -11,6 +11,10 @@ import Dashboard from 'Pages/Dashboard/Dashboard';
 import Assignment from 'Pages/Assignment/Assignment';
 import User from 'Pages/User/User';
 import Timeline from 'Pages/Timeline/Timeline';
+import {
+	OrganizationContent,
+	OrganizationContentForm,
+} from 'Pages/OrganizationContent';
 
 export const ROUTES = [
 	{
@@ -52,6 +56,27 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: Timeline,
+      },
+      {
+				path: '/admin/ukm-ormawa',
+				key: 'UKM-ORMAWA',
+				exact: true,
+				layout: true,
+				component: OrganizationContent,
+			},
+			{
+				path: '/admin/ukm-ormawa/tambah',
+				key: 'ADD_UKM_ORMAWA',
+				exact: true,
+				layout: true,
+				component: OrganizationContentForm,
+			},
+			{
+				path: '/admin/ukm-ormawa/:id/sunting',
+				key: 'SUNTING_UKM_ORMAWA',
+				exact: true,
+				layout: true,
+				component: OrganizationContentForm,
 			},
 		],
 	},

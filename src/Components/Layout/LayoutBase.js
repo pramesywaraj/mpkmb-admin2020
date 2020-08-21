@@ -11,6 +11,7 @@ import {
 	LogoutOutlined,
 	UserOutlined,
 	CalendarFilled,
+	GlobalOutlined,
 } from '@ant-design/icons';
 
 import './LayoutBase.scss';
@@ -40,6 +41,11 @@ const menuItems = [
 		route: '/admin/timeline',
 		name: 'Timeline',
 		icon: <CalendarFilled />,
+  },
+  {		
+    route: '/admin/ukm-ormawa',
+		name: 'UKM & Ormawa',
+		icon: <GlobalOutlined />,
 	},
 ];
 
@@ -57,12 +63,7 @@ export default function LayoutBase({ children }) {
 		setCollapsed(collapsed);
 	}
 
-	// function onGoTo(route, id) {
-	// 	setSelected(id);
-	// 	history.push(`/admin${route}`);
-	// }
 	function onGoTo(key, route) {
-		console.log('key', key);
 		history.push(route);
 	}
 
@@ -82,7 +83,7 @@ export default function LayoutBase({ children }) {
 					<img src={MainLogo} alt="Logo MPKMB 2020" />
 				</div>
 				<Menu theme="dark" selectedKeys={[selected]} mode="inline">
-					{menuItems.map(({ id, icon, name, route }) => (
+					{menuItems.map(({ icon, name, route }) => (
 						<Menu.Item
 							key={route}
 							icon={icon}
