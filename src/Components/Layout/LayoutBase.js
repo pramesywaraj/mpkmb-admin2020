@@ -12,13 +12,13 @@ import {
 	UserOutlined,
 	CalendarFilled,
 	GlobalOutlined,
+	ShoppingCartOutlined
 } from '@ant-design/icons';
 
 import './LayoutBase.scss';
 import MainLogo from 'Assets/logo.svg';
 
-const { Header, Content, Footer, Sider } = Layout;
-const { SubMenu } = Menu;
+const { Content, Footer, Sider } = Layout;
 const { Text, Link } = Typography;
 
 const menuItems = [
@@ -41,11 +41,16 @@ const menuItems = [
 		route: '/admin/timeline',
 		name: 'Timeline',
 		icon: <CalendarFilled />,
-  },
-  {		
-    route: '/admin/ukm-ormawa',
+	},
+	{
+		route: '/admin/ukm-ormawa',
 		name: 'UKM & Ormawa',
 		icon: <GlobalOutlined />,
+	},
+	{
+		route: '/admin/mpkmb-store',
+		name: 'MPKMB Store',
+		icon: <ShoppingCartOutlined />,
 	},
 ];
 

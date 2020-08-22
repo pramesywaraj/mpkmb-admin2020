@@ -15,6 +15,7 @@ import {
 	OrganizationContent,
 	OrganizationContentForm,
 } from 'Pages/OrganizationContent';
+import Store from 'Pages/Store/Store'
 
 export const ROUTES = [
 	{
@@ -56,8 +57,8 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: Timeline,
-      },
-      {
+			},
+			{
 				path: '/admin/ukm-ormawa',
 				key: 'UKM-ORMAWA',
 				exact: true,
@@ -77,6 +78,13 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: OrganizationContentForm,
+			},
+			{
+				path: '/admin/mpkmb-store',
+				key: 'MPKMB_STORE_DASHBOARD',
+				exact: true,
+				layout: true,
+				component: Store,
 			},
 		],
 	},
