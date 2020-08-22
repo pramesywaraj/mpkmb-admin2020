@@ -12,7 +12,7 @@ import {
 	UserOutlined,
 	CalendarFilled,
 	GlobalOutlined,
-	ShoppingCartOutlined
+	ShopFilled,
 } from '@ant-design/icons';
 
 import './LayoutBase.scss';
@@ -50,7 +50,7 @@ const menuItems = [
 	{
 		route: '/admin/mpkmb-store',
 		name: 'MPKMB Store',
-		icon: <ShoppingCartOutlined />,
+		icon: <ShopFilled />,
 	},
 ];
 
