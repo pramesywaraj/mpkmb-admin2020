@@ -12,6 +12,7 @@ export default function StoreCard({
 	data,
 	handleDelete,
 	handleSwitch,
+	handleEdit,
 }) {
 	const {
 		Id,
@@ -26,9 +27,18 @@ export default function StoreCard({
 	return (
 		<Card
 			style={{ width: 'auto', marginTop: 20 }}
-			cover={<img alt={Name} src={Thumbnail} />}
+			cover={
+				<img
+					alt={Name}
+					src={
+						Thumbnail
+							? Thumbnail
+							: 'https://drive.google.com/file/d/1fDKlN0a327o_MdoyzBNnQeg1ldYGxX8P/preview'
+					}
+				/>
+			}
 			actions={[
-				<EditOutlined key="edit" />,
+				<EditOutlined key="edit" onClick={() => handleEdit(data)} />,
 				<DeleteFilled
 					key="delete"
 					style={{ color: 'red' }}
@@ -60,4 +70,5 @@ StoreCard.propTypes = {
 	data: PropTypes.object.isRequired,
 	handleDelete: PropTypes.func.isRequired,
 	handleSwitch: PropTypes.func.isRequired,
+	handleEdit: PropTypes.func.isRequired,
 };

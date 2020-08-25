@@ -9,12 +9,20 @@ import {
 	Pagination,
 	Spin,
 	Modal,
+	Form,
 } from 'antd';
 import { PlusCircleFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 
 import StoreCard from 'Components/Card/StoreCard';
+import ProductFormModal from 'Components/Modal/ProductFormModal';
 
-import { getStoreProducts, deleteProduct, switchPublish } from 'Service/Store';
+import {
+	getStoreProducts,
+	createNewProduct,
+	deleteProduct,
+	switchPublish,
+	updateProduct,
+} from 'Service/Store';
 
 import useModal from 'Hooks/useModal';
 import useLoading from 'Hooks/useLoading';
@@ -29,9 +37,14 @@ export default function Store() {
 		current: 1,
 		dataCount: 1,
 	});
+	const [isEdit, setIsEdit] = useState(false);
+	const [selectedProduct, setSelectedProduct] = useState(null);
 	const [fetchLoading, showFetchLoading, hideFetchLoading] = useLoading();
-
+	const [isFormModalVisible, openFormModal, closeFormModal] = useModal();
+	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 	const [firstLoad, setFirstLoad] = useState(true);
+
+	const [form] = Form.useForm();
 
 	async function getProducts() {
 		showFetchLoading();
@@ -83,11 +96,68 @@ export default function Store() {
 		}
 	}
 
+	async function addNewProduct(values) {
+		showSubmitLoading();
+		try {
+			const { data } = await createNewProduct({ ...values });
+
+			getProducts();
+
+			form.resetFields();
+			closeFormModal();
+
+			Message.success('Produk berhasil ditambahkan');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideSubmitLoading();
+		}
+	}
+
+	async function editProduct(values) {
+		showSubmitLoading();
+		try {
+			const { data } = await updateProduct({ ...values });
+
+			getProducts();
+
+			form.resetFields();
+			closeFormModal();
+			Message.success('Produk berhasil diubah');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideSubmitLoading();
+		}
+	}
+
+	function handleOpen() {
+		openFormModal();
+	}
+
+	function handleClose() {
+		if (isEdit) setIsEdit(false);
+
+		closeFormModal();
+		form.resetFields();
+	}
+
 	function handleChangePage(page) {
 		setPageProperty({
 			...pageProperty,
 			current: page,
 		});
+	}
+
+	function handleEdit(product) {
+		setSelectedProduct(product);
+		setIsEdit(true);
+
+		form.setFieldsValue(product);
+
+		openFormModal();
 	}
 
 	async function handleChangeStatus(Id, PublishStatus) {
@@ -117,12 +187,32 @@ export default function Store() {
 		});
 	}
 
+	function handleSubmit() {
+		form.validateFields().then((values) => {
+			let tempVal = {
+				...selectedProduct,
+				...values,
+				Price: parseInt(values.Price),
+			};
+
+			if (isEdit) {
+				return editProduct(tempVal);
+			}
+
+			return addNewProduct(tempVal);
+		});
+	}
+
 	return (
 		<>
 			<PageHeader title="MPKMB Store" />
 			<div style={{ padding: '32px' }}>
 				<Row style={{ paddingBottom: 15 }} align="middle" justify="end">
-					<Button type="primary" icon={<PlusCircleFilled />}>
+					<Button
+						type="primary"
+						icon={<PlusCircleFilled />}
+						onClick={handleOpen}
+					>
 						Tambah Produk Baru
 					</Button>
 				</Row>
@@ -141,6 +231,7 @@ export default function Store() {
 									loading={fetchLoading}
 									handleDelete={handleDelete}
 									handleSwitch={handleChangeStatus}
+									handleEdit={handleEdit}
 								/>
 							</Col>
 						))
@@ -161,6 +252,14 @@ export default function Store() {
 					''
 				)}
 			</div>
+			<ProductFormModal
+				isVisible={isFormModalVisible}
+				isEdit={isEdit}
+				addLoading={submitLoading}
+				handleCancel={handleClose}
+				handleSubmit={handleSubmit}
+				formObject={form}
+			/>
 		</>
 	);
 }

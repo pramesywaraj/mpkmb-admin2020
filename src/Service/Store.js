@@ -56,6 +56,112 @@ export function getStoreProducts({ Page, Limit = 8 }) {
 	return res;
 }
 
+export function createNewProduct({
+	Name,
+	Description,
+	Thumbnail,
+	ProductCode,
+	Price,
+}) {
+	const query = `
+    mutation (
+      $Name: String!, 
+      $Description: String, 
+      $Thumbnail: String,
+      $ProductCode: String,
+      $Price: Int,
+      $PublishStatus: Boolean,
+    ) {
+      CreateProduct(
+        Name: $Name,
+        Description: $Description,
+        Thumbnail: $Thumbnail,
+        ProductCode: $ProductCode,
+        Price: $Price,
+        PublishStatus: $PublishStatus,
+      ) {
+        Id
+        Name
+        Description
+        Thumbnail
+        ProductCode
+        Price
+        PublishStatus
+      }
+    }
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
+		},
+		query,
+		variables: {
+			Name,
+			Description,
+			Thumbnail,
+			ProductCode,
+			Price,
+			PublishStatus: true,
+		},
+	});
+
+	return res;
+}
+
+export function updateProduct({
+	Id,
+	Name,
+	Description,
+	Thumbnail,
+	ProductCode,
+	Price,
+}) {
+	const query = `
+    mutation (
+      $Id: String!,
+      $Name: String!, 
+      $Description: String, 
+      $Thumbnail: String,
+      $ProductCode: String,
+      $Price: Int,
+    ) {
+      UpdateProduct(
+        Id: $Id,
+        Name: $Name,
+        Description: $Description,
+        Thumbnail: $Thumbnail,
+        ProductCode: $ProductCode,
+        Price: $Price,
+      ) {
+        Id
+        Name
+        Description
+        Thumbnail
+        ProductCode
+        Price
+      }
+    }  
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
+		},
+		query,
+		variables: {
+			Id,
+			Name,
+			Description,
+			Thumbnail,
+			ProductCode,
+			Price,
+		},
+	});
+
+	return res;
+}
+
 export function deleteProduct({ Id }) {
 	const query = `
     mutation ($Id: String!) {
