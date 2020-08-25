@@ -5,22 +5,23 @@ import {
 	Col,
 	Button,
 	message as Message,
-	Card,
 	Empty,
 	Pagination,
 	Spin,
+	Modal,
 } from 'antd';
-import { PlusCircleFilled } from '@ant-design/icons';
+import { PlusCircleFilled, ExclamationCircleOutlined } from '@ant-design/icons';
 
 import StoreCard from 'Components/Card/StoreCard';
 
-import { getStoreProducts } from 'Service/Store';
+import { getStoreProducts, deleteProduct, switchPublish } from 'Service/Store';
 
 import useModal from 'Hooks/useModal';
 import useLoading from 'Hooks/useLoading';
 
 const { PRESENTED_IMAGE_SIMPLE } = Empty;
 const PAGE_SIZE = 8;
+const { confirm } = Modal;
 
 export default function Store() {
 	const [products, setProducts] = useState([]);
@@ -70,10 +71,49 @@ export default function Store() {
 		getProducts();
 	}, [pageProperty.current, setPageProperty]);
 
+	async function deleteExistingProduct(Id) {
+		try {
+			const res = await deleteProduct({ Id });
+			getProducts();
+
+			Message.success('Produk berhasil dihapus');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		}
+	}
+
 	function handleChangePage(page) {
 		setPageProperty({
 			...pageProperty,
 			current: page,
+		});
+	}
+
+	async function handleChangeStatus(Id, PublishStatus) {
+		try {
+			const res = await switchPublish({ Id, PublishStatus: !PublishStatus });
+
+			getProducts();
+
+			Message.success('Status produk berhasil diubah');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		}
+	}
+
+	function handleDelete(Id) {
+		confirm({
+			title: 'Apakah Anda yakin?',
+			icon: <ExclamationCircleOutlined />,
+			okText: 'Ya',
+			okType: 'danger',
+			cancelText: 'Batalkan',
+			onOk() {
+				deleteExistingProduct(Id);
+			},
+			onCancel() {},
 		});
 	}
 
@@ -96,7 +136,12 @@ export default function Store() {
 					) : products ? (
 						products.map((product, index) => (
 							<Col key={index} className="gutter-row" span={6}>
-								<StoreCard data={product} loading={fetchLoading} />
+								<StoreCard
+									data={product}
+									loading={fetchLoading}
+									handleDelete={handleDelete}
+									handleSwitch={handleChangeStatus}
+								/>
 							</Col>
 						))
 					) : (

@@ -55,3 +55,55 @@ export function getStoreProducts({ Page, Limit = 8 }) {
 
 	return res;
 }
+
+export function deleteProduct({ Id }) {
+	const query = `
+    mutation ($Id: String!) {
+      DeleteProduct(Id: $Id) {
+        message
+      }
+    }  
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
+		},
+		query,
+		variables: {
+			Id,
+		},
+	});
+
+	return res;
+}
+
+export function switchPublish({ Id, PublishStatus }) {
+	const query = `
+    mutation (
+      $Id: String!,
+      $PublishStatus: Boolean, 
+    ) {
+      UpdateProduct(
+        Id: $Id,
+        PublishStatus: $PublishStatus, 
+      ) {
+        Id
+        PublishStatus
+      }
+    }  
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
+		},
+		query,
+		variables: {
+			Id,
+			PublishStatus,
+		},
+	});
+
+	return res;
+}

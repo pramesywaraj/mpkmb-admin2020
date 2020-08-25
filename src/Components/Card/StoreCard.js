@@ -7,8 +7,14 @@ import './StoreCard.scss';
 
 const { Meta } = Card;
 
-export default function StoreCard({ loading, data }) {
+export default function StoreCard({
+	loading,
+	data,
+	handleDelete,
+	handleSwitch,
+}) {
 	const {
+		Id,
 		Name,
 		Description,
 		Thumbnail,
@@ -23,8 +29,16 @@ export default function StoreCard({ loading, data }) {
 			cover={<img alt={Name} src={Thumbnail} />}
 			actions={[
 				<EditOutlined key="edit" />,
-				<DeleteFilled key="delete" style={{ color: 'red' }} />,
-				<Switch key="switch" checked={PublishStatus} />,
+				<DeleteFilled
+					key="delete"
+					style={{ color: 'red' }}
+					onClick={() => handleDelete(Id)}
+				/>,
+				<Switch
+					key="switch"
+					checked={PublishStatus}
+					onChange={() => handleSwitch(Id)}
+				/>,
 			]}
 			loading={loading}
 		>
@@ -44,4 +58,6 @@ export default function StoreCard({ loading, data }) {
 StoreCard.propTypes = {
 	loading: PropTypes.bool.isRequired,
 	data: PropTypes.object.isRequired,
+	handleDelete: PropTypes.func.isRequired,
+	handleSwitch: PropTypes.func.isRequired,
 };
