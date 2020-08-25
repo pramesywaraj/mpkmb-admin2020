@@ -1,0 +1,30 @@
+.ant-card {
+  .ant-card-cover {
+    width: auto !important; 
+    height: 200px !important;
+
+    img {
+      display: block;
+      object-fit: contain;
+      max-width: 100%;
+      max-height: 100%;
+    }
+  }
+
+  .ant-card-body {
+    max-height: 250px;
+    overflow: auto;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none; 
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ant-divider {
+      font-weight: 500 !important;
+    }
+  }
+}
+
