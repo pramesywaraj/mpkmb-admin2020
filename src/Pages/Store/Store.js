@@ -64,6 +64,19 @@ export default function Store() {
 		getProducts();
 	}, []);
 
+	useEffect(() => {
+		if (firstLoad) return;
+
+		getProducts();
+	}, [pageProperty.current, setPageProperty]);
+
+	function handleChangePage(page) {
+		setPageProperty({
+			...pageProperty,
+			current: page,
+		});
+	}
+
 	return (
 		<>
 			<PageHeader title="MPKMB Store" />
@@ -96,6 +109,7 @@ export default function Store() {
 							current={pageProperty.current}
 							total={pageProperty.dataCount}
 							defaultPageSize={PAGE_SIZE}
+							onChange={handleChangePage}
 						/>
 					</Row>
 				) : (
