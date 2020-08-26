@@ -47,7 +47,7 @@ export default function StoreCard({
 				<Switch
 					key="switch"
 					checked={PublishStatus}
-					onChange={() => handleSwitch(Id)}
+					onChange={() => handleSwitch(Id, PublishStatus)}
 				/>,
 			]}
 			loading={loading}
