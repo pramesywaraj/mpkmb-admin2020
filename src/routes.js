@@ -15,7 +15,8 @@ import {
 	OrganizationContent,
 	OrganizationContentForm,
 } from 'Pages/OrganizationContent';
-import Store from 'Pages/Store/Store'
+import Store from 'Pages/Store/Store';
+import Leaderboard from 'Pages/Leaderboard/Leaderboard';
 
 export const ROUTES = [
 	{
@@ -85,6 +86,13 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: Store,
+			},
+			{
+				path: '/admin/leaderboard',
+				key: 'MPKMB_STORE_LEADERBOARD',
+				exact: true,
+				layout: true,
+				component: Leaderboard,
 			},
 		],
 	},

@@ -13,6 +13,7 @@ import {
 	CalendarFilled,
 	GlobalOutlined,
 	ShopFilled,
+	TrophyFilled,
 } from '@ant-design/icons';
 
 import './LayoutBase.scss';
@@ -51,6 +52,11 @@ const menuItems = [
 		route: '/admin/mpkmb-store',
 		name: 'MPKMB Store',
 		icon: <ShopFilled />,
+	},
+	{
+		route: '/admin/leaderboard',
+		name: 'Leaderboard',
+		icon: <TrophyFilled />,
 	},
 ];
 
