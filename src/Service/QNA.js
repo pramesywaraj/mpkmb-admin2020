@@ -43,7 +43,7 @@ export function getQNAList({ Page, Limit = 10 }) {
 			Limit,
 			Page,
 			OrderBy: 'CreatedDate',
-			OrderType: 'ASC',
+			OrderType: 'DESC',
 		},
 	});
 
