@@ -15,7 +15,8 @@ import {
 	OrganizationContent,
 	OrganizationContentForm,
 } from 'Pages/OrganizationContent';
-import Store from 'Pages/Store/Store'
+import Store from 'Pages/Store/Store';
+import QNA from 'Pages/QNA/QNA';
 
 export const ROUTES = [
 	{
@@ -85,6 +86,13 @@ export const ROUTES = [
 				exact: true,
 				layout: true,
 				component: Store,
+			},
+			{
+				path: '/admin/qna',
+				key: 'MPKMB_QNA',
+				exact: true,
+				layout: true,
+				component: QNA,
 			},
 		],
 	},
