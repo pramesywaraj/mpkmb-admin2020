@@ -223,7 +223,7 @@ export default function Store() {
 				>
 					{fetchLoading ? (
 						<Spin size="large" tip="Mohon tunggu..." />
-					) : products ? (
+					) : products.length > 0 ? (
 						products.map((product, index) => (
 							<Col key={index} className="gutter-row" span={6}>
 								<StoreCard
@@ -239,7 +239,7 @@ export default function Store() {
 						<Empty image={PRESENTED_IMAGE_SIMPLE} />
 					)}
 				</Row>
-				{!fetchLoading ? (
+				{!fetchLoading && products ? (
 					<Row style={{ paddingTop: 30 }} align="middle" justify="center">
 						<Pagination
 							current={pageProperty.current}
