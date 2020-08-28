@@ -48,7 +48,7 @@ export function getLeaderboards() {
 
 export function addLeaderboard({ Title, Description, Date, IsPublish }) {
 	const query = `
-    mutations (
+    mutation (
       $Title: String!,
       $Description: String!,
       $Date: String!,
@@ -83,6 +83,54 @@ export function addLeaderboard({ Title, Description, Date, IsPublish }) {
 		},
 		query,
 		variables: {
+			Title,
+			Description,
+			Date,
+			IsPublish: true,
+		},
+	});
+
+	return res;
+}
+
+export function editLeaderboard({
+	LeaderboardId,
+	Title,
+	Description,
+	Date,
+	IsPublish,
+}) {
+	const query = `
+    mutation (
+      $LeaderboardId: String,
+      $Title: String!,
+      $Description: String!,
+      $Date: String!,
+      $IsPublish: Boolean!
+    ) {
+      CreateOrUpdateLeaderboard(
+        LeaderboardId: $LeaderboardId,
+        Title: $Title,
+        Description: $Description,
+        Date: $Date,
+        IsPublish: $IsPublish
+      ) {
+        LeaderboardId
+        Title
+        Description
+        Date
+        IsPublish
+      }
+    }
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
+		},
+		query,
+		variables: {
+			LeaderboardId,
 			Title,
 			Description,
 			Date,

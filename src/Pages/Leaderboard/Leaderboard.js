@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import moment from 'moment';
 
 import {
 	PageHeader,
@@ -11,21 +12,28 @@ import {
 	Empty,
 	message as Message,
 	Typography,
+	Tooltip,
+	Space,
 } from 'antd';
-import { PlusCircleFilled } from '@ant-design/icons';
+import { PlusCircleFilled, EditFilled } from '@ant-design/icons';
 
 import {
 	CreateUserFormModal,
 	CreateLeaderboardFormModal,
 } from 'Components/Modal/LeaderboardFormModal';
+import { parseDate } from 'Utils/date';
 
 import useModal from 'Hooks/useModal';
 import useLoading from 'Hooks/useLoading';
 
-import { getLeaderboards, addLeaderboard } from 'Service/Leaderboard';
+import {
+	getLeaderboards,
+	addLeaderboard,
+	editLeaderboard,
+} from 'Service/Leaderboard';
 
 const { Column } = Table;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 export default function Leaderboard() {
 	const [leaderboards, setLeaderboards] = useState([]);
@@ -65,23 +73,55 @@ export default function Leaderboard() {
 		}
 	}
 
+	async function createNewLeaderboard(values) {
+		showSubmitLoading();
+		try {
+			const res = await addLeaderboard(values);
+
+			LeaderboardForm.resetFields();
+			hideLeaderboardFormModal();
+
+			getLeaderboardsData();
+
+			Message.success('Leaderboard berhasil dibuat.');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideFetchLoading();
+		}
+	}
+
+	async function editExistingLeaderboard(values) {
+		showSubmitLoading();
+		try {
+			const res = await editLeaderboard(values);
+
+			LeaderboardForm.resetFields();
+			hideLeaderboardFormModal();
+
+			getLeaderboardsData();
+
+			Message.success('Leaderboard berhasil diubah.');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideSubmitLoading();
+		}
+	}
+
 	useEffect(() => {
 		if (firstLoad.current) firstLoad.current = false;
 
 		getLeaderboardsData();
 	}, []);
 
-	function handleOpenLeaderboardModal() {
-		showLeaderboardFormModal();
-	}
-
-	function handleOpenLeaderboardUserModal() {
-		showLeaderboardUserFormModal();
-	}
-
 	function handleCloseLeaderboardModal() {
 		LeaderboardForm.resetFields();
 		hideLeaderboardFormModal();
+
+		setSelectedLeaderboard(null);
 	}
 
 	function handleCloseUserModal() {
@@ -89,8 +129,26 @@ export default function Leaderboard() {
 		hideLeaderboardFormModal();
 	}
 
-	function handleSubmitNewLeaderboard(val) {
-		console.log(val);
+	function handleSubmitLeaderboardForm() {
+		LeaderboardForm.validateFields().then((formValue) => {
+			let { Date } = formValue;
+
+			let values = {
+				...formValue,
+				Date: Date.format('YYYY-MM-DD'),
+			};
+
+			if (isEdit) {
+				let editedVal = {
+					...selectedLeaderboard,
+					...values,
+				};
+
+				return editExistingLeaderboard(editedVal);
+			}
+
+			return createNewLeaderboard(values);
+		});
 	}
 
 	function handleSelectLeaderboard(leaderboard) {
@@ -100,8 +158,31 @@ export default function Leaderboard() {
 		setSelectedLeaderboard(leaderboard);
 	}
 
-	function handleLeaderboardSwitch(event, { LeaderboardId, IsPublish }) {
+	function handleLeaderboardSwitch(event, leaderboard) {
 		event.stopPropagation();
+
+		const { IsPublish, Date } = leaderboard;
+
+		let newValue = {
+			...leaderboard,
+			Date: moment(parseDate(Date)),
+			IsPublish: !IsPublish,
+		};
+
+		editExistingLeaderboard(newValue);
+	}
+
+	function handleEditLeaderboard(leaderboard) {
+		let temp = {
+			...leaderboard,
+			Date: moment(parseDate(leaderboard.Date)),
+		};
+
+		setIsEdit(true);
+		setSelectedLeaderboard(temp);
+
+		LeaderboardForm.setFieldsValue(temp);
+		showLeaderboardFormModal();
 	}
 
 	return (
@@ -114,7 +195,7 @@ export default function Leaderboard() {
 							<Button
 								type="primary"
 								icon={<PlusCircleFilled />}
-								onClick={handleOpenLeaderboardModal}
+								onClick={showLeaderboardFormModal}
 							>
 								Tambah Leaderboard baru
 							</Button>
@@ -146,20 +227,32 @@ export default function Leaderboard() {
 								dataIndex="Description"
 								key="Description"
 							/>
-							<Column title="Tanggal" dataIndex="Date" key="Date" />
 							<Column
-								title="Action"
+								title="Tanggal"
+								dataIndex="Date"
+								key="Date"
+								render={(text, record) => <Text>{parseDate(record.Date)}</Text>}
+							/>
+							<Column
 								key="action"
-								render={(text, { LeaderboardId, IsPublish }) => (
-									<Switch
-										checked={IsPublish}
-										onClick={(checkStatus, e) =>
-											handleLeaderboardSwitch(e, {
-												LeaderboardId,
-												IsPublish: checkStatus,
-											})
-										}
-									/>
+								render={(text, record) => (
+									<Space size="middle">
+										<Switch
+											loading={submitLoading}
+											checked={record.IsPublish}
+											onClick={(checkStatus, e) =>
+												handleLeaderboardSwitch(e, record)
+											}
+										/>
+										<Tooltip title="Sunting">
+											<Button
+												onClick={() => handleEditLeaderboard(record)}
+												type="primary"
+												shape="circle"
+												icon={<EditFilled />}
+											/>
+										</Tooltip>
+									</Space>
 								)}
 							/>
 						</Table>
@@ -190,11 +283,7 @@ export default function Leaderboard() {
 							<Column title="Nama" dataIndex="Name" key="Name" />
 							<Column title="NIM" dataIndex="NIM" key="NIM" />
 							<Column title="Poin" dataIndex="Point" key="Point" />
-							<Column
-								title="Action"
-								key="action"
-								render={(text, record) => <Switch />}
-							/>
+							<Column key="action" render={(text, record) => <Switch />} />
 						</Table>
 					</Col>
 				</Row>
@@ -204,7 +293,7 @@ export default function Leaderboard() {
 				isEdit={isEdit}
 				addLoading={submitLoading}
 				handleCancel={handleCloseLeaderboardModal}
-				handleSubmit={handleSubmitNewLeaderboard}
+				handleSubmit={handleSubmitLeaderboardForm}
 				formObject={LeaderboardForm}
 			/>
 			<CreateUserFormModal
@@ -212,7 +301,7 @@ export default function Leaderboard() {
 				isEdit={isEdit}
 				addLoading={submitLoading}
 				handleCancel={handleCloseUserModal}
-				handleSubmit={handleSubmitNewLeaderboard}
+				handleSubmit={handleSubmitLeaderboardForm}
 				formObject={LeaderboardUserForm}
 			/>
 		</>
