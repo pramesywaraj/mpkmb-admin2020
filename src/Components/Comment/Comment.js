@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Comment as CommentComponent, Avatar, Switch } from 'antd';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import useLoading from 'Hooks/useLoading';
+import { Comment as CommentComponent, Avatar, Switch, Tooltip } from 'antd';
+import {
+	EditOutlined,
+	DeleteOutlined,
+	CheckOutlined,
+	CloseOutlined,
+} from '@ant-design/icons';
 import formatDate from '../../Utils/date';
 import CommentEditor from './CommentEditor';
 
@@ -48,14 +52,20 @@ function Comment({
 								Balas
 							</span>
 						),
-						<Switch
-							loading={selectedId === Id ? switchLoading : false}
-							checked={PublishStatus}
-							onChange={() => {
-								setSelectedId(Id);
-								handleChangeStatus(Id, PublishStatus);
-							}}
-						/>,
+						<Tooltip key={Id} title={Answer && Answer !== '' ? null : 'silahkan balas terlebih dahulu !'}>
+							<Switch
+								size="small"
+								checkedChildren={<CheckOutlined />}
+								unCheckedChildren={<CloseOutlined />}
+								disabled={Answer && Answer !== '' ? false : true}
+								loading={selectedId === Id ? switchLoading : false}
+								checked={PublishStatus}
+								onChange={() => {
+									setSelectedId(Id);
+									handleChangeStatus(Id, PublishStatus);
+								}}
+							/>
+						</Tooltip>,
 						<span
 							key="comment-basic-reply-to"
 							className="delete-qna"
