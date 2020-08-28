@@ -52,7 +52,14 @@ function Comment({
 								Balas
 							</span>
 						),
-						<Tooltip key={Id} title={Answer && Answer !== '' ? null : 'silahkan balas terlebih dahulu !'}>
+						<Tooltip
+							key={Id}
+							title={
+								Answer && Answer !== ''
+									? null
+									: 'silahkan balas terlebih dahulu !'
+							}
+						>
 							<Switch
 								size="small"
 								checkedChildren={<CheckOutlined />}
