@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import {
@@ -14,14 +15,20 @@ import {
 	Typography,
 	Tooltip,
 	Space,
+	Upload,
 } from 'antd';
-import { PlusCircleFilled, EditFilled } from '@ant-design/icons';
+import {
+	PlusCircleFilled,
+	EditFilled,
+	UploadOutlined,
+} from '@ant-design/icons';
 
 import {
 	CreateUserFormModal,
 	CreateLeaderboardFormModal,
 } from 'Components/Modal/LeaderboardFormModal';
 import { parseDate } from 'Utils/date';
+import { extractJSON } from 'Utils/readExcel';
 
 import useModal from 'Hooks/useModal';
 import useLoading from 'Hooks/useLoading';
@@ -35,12 +42,46 @@ import {
 const { Column } = Table;
 const { Title, Text } = Typography;
 
+function LeaderboardUserUpload({ file, addFile, uploadFile, uploadLoading }) {
+	return (
+		<>
+			<Upload
+				accept=".xlsx"
+				showUploadList={false}
+				beforeUpload={(file) => {
+					addFile(file);
+					return false;
+				}}
+			>
+				<Button>
+					<UploadOutlined /> Pilih file excel untuk diunggah
+				</Button>
+			</Upload>
+			<Button
+				loading={uploadLoading}
+				type="primary"
+				style={{ marginTop: 16 }}
+				onClick={uploadFile}
+			>
+				Unggah File Excel
+			</Button>
+			{file ? (
+				<Text style={{ display: 'block', marginTop: 10 }}>{file.name}</Text>
+			) : (
+				''
+			)}
+		</>
+	);
+}
+
 export default function Leaderboard() {
 	const [leaderboards, setLeaderboards] = useState([]);
 	const [selectedLeaderboard, setSelectedLeaderboard] = useState(null);
+	const [usersFile, setUsersFile] = useState(null);
 	const [users, setUsers] = useState(null);
 	const [isEdit, setIsEdit] = useState(false);
 	const firstLoad = useRef(true);
+
 	const [
 		isLeaderboardFormModalVisible,
 		showLeaderboardFormModal,
@@ -185,6 +226,25 @@ export default function Leaderboard() {
 		showLeaderboardFormModal();
 	}
 
+	function handleAddFile(file) {
+		setUsersFile(file);
+	}
+
+	async function handleUploadFile() {
+		if (!usersFile) {
+			Message.warn(
+				'Tidak ada file untuk diunggah. Silahkan pilih terlebih dahulu.'
+			);
+			return;
+		}
+
+		try {
+			const res = await extractJSON(usersFile);
+		} catch (e) {
+			Message.error(e);
+		}
+	}
+
 	return (
 		<>
 			<PageHeader title="Leaderboard" />
@@ -267,9 +327,11 @@ export default function Leaderboard() {
 							rowKey="LeaderboardUserId"
 							locale={{
 								emptyText: selectedLeaderboard ? (
-									<Empty
-										image={Empty.PRESENTED_IMAGE_SIMPLE}
-										description="No Data"
+									<LeaderboardUserUpload
+										addFile={handleAddFile}
+										uploadFile={handleUploadFile}
+										file={usersFile}
+										uploadLoading={false}
 									/>
 								) : (
 									<Empty
@@ -307,3 +369,10 @@ export default function Leaderboard() {
 		</>
 	);
 }
+
+LeaderboardUserUpload.propTypes = {
+	file: PropTypes.object,
+	addFile: PropTypes.func.isRequired,
+	uploadFile: PropTypes.func.isRequired,
+	uploadLoading: PropTypes.bool,
+};
