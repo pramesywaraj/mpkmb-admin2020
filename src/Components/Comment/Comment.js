@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Comment as CommentComponent, Avatar, Switch } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import useLoading from 'Hooks/useLoading';
-import formatDate from '../../Utils/date'
+import formatDate from '../../Utils/date';
 import CommentEditor from './CommentEditor';
 
 function Comment({
@@ -14,14 +14,15 @@ function Comment({
 	PublishStatus,
 	createdAt,
 	updatedAt,
+	submitLoading,
+	switchLoading,
 	handleChangeStatus,
 	handleReply,
 	handleDelete,
 }) {
-	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
-	const [switchLoading, showSwitchLoading, hideSwitchLoading] = useLoading();
 	const [showRelpies, setShowReplies] = useState(false);
 	const [showEditor, setShowEditor] = useState(false);
+	const [selectedId, setSelectedId] = useState('');
 	const [textValue, setTextValue] = useState('');
 	return (
 		<>
@@ -39,15 +40,21 @@ function Comment({
 							<span
 								key="comment-basic-reply-to"
 								className="reply"
-								onClick={() => setShowEditor(!showEditor)}
+								onClick={() => {
+									setSelectedId(Id);
+									setShowEditor(!showEditor);
+								}}
 							>
 								Balas
 							</span>
 						),
 						<Switch
-							// loading={false}
+							loading={selectedId === Id ? switchLoading : false}
 							checked={PublishStatus}
-							onChange={() => handleChangeStatus(Id, PublishStatus)}
+							onChange={() => {
+								setSelectedId(Id);
+								handleChangeStatus(Id, PublishStatus);
+							}}
 						/>,
 						<span
 							key="comment-basic-reply-to"
@@ -75,6 +82,7 @@ function Comment({
 								key="comment-basic-reply-to"
 								onClick={() => {
 									setTextValue(Answer);
+									setSelectedId(Id);
 									setShowReplies(!showRelpies);
 									setShowEditor(!showEditor);
 								}}
@@ -96,19 +104,23 @@ function Comment({
 				) : (
 					showEditor && (
 						<CommentEditor
+							submitLoading={submitLoading}
+							Id={Id}
+							selectedId={selectedId}
 							value={textValue}
 							handleReply={handleReply}
 							onChange={setTextValue}
 							onSubmit={() => {
 								handleReply(Id, textValue);
-								setTextValue('');
 								setShowReplies(false);
 								setShowEditor(false);
+								setTextValue('');
 							}}
 							onCancel={() => {
-								setTextValue('');
 								setShowReplies(false);
 								setShowEditor(false);
+								setSelectedId('');
+								setTextValue('');
 							}}
 						/>
 					)
@@ -124,6 +136,8 @@ Comment.propTypes = {
 	Question: PropTypes.string.isRequired,
 	Answer: PropTypes.string,
 	PublishStatus: PropTypes.bool.isRequired,
+	submitLoading: PropTypes.bool.isRequired,
+	switchLoading: PropTypes.bool.isRequired,
 	createdAt: PropTypes.string,
 	updatedAt: PropTypes.string,
 	handleChangeStatus: PropTypes.func,

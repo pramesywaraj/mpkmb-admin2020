@@ -28,7 +28,11 @@ export default function QNA() {
 		current: 1,
 		dataCount: 1,
 	});
+
 	const [fetchLoading, showFetchLoading, hideFetchLoading] = useLoading();
+	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
+	const [switchLoading, showSwitchLoading, hideSwitchLoading] = useLoading();
+
 	async function getQNA() {
 		showFetchLoading();
 
@@ -72,45 +76,43 @@ export default function QNA() {
 	}
 
 	async function handleReply(Id, Answer) {
+		showSubmitLoading();
 		try {
 			await editQNA({ Id, Answer });
-
-			getQNA();
-
 			Message.success('Status qna berhasil diubah');
 		} catch (e) {
 			const { message } = e;
 			Message.error(message);
 		} finally {
-			// hideSwitchLoading();
+			hideSubmitLoading();
+			getQNA();
 		}
 	}
 
 	async function handleChangeStatus(Id, PublishStatus) {
-		// showSwitchLoading();
+		showSwitchLoading();
 		try {
 			await switchPublish({ Id, PublishStatus: !PublishStatus });
-
-			getQNA();
-
 			Message.success('Status qna berhasil diubah');
 		} catch (e) {
 			const { message } = e;
 			Message.error(message);
 		} finally {
-			// hideSwitchLoading();
+			hideSwitchLoading();
+			getQNA();
 		}
 	}
 
 	async function deleteQNA(Id) {
+		showFetchLoading();
 		try {
 			await DeleteQNA({ Id });
-			getQNA();
-
 			Message.success('qna berhasil dihapus');
 		} catch (e) {
 			const { message } = e;
 			Message.error(message);
+		} finally {
+			getQNA();
 		}
 	}
 
@@ -148,6 +150,8 @@ export default function QNA() {
 								PublishStatus={item.PublishStatus}
 								createdAt={item.CreatedDate}
 								updatedAt={item.LastUpdated}
+								submitLoading={submitLoading}
+								switchLoading={switchLoading}
 								handleChangeStatus={handleChangeStatus}
 								handleReply={handleReply}
 								handleDelete={handleDelete}
