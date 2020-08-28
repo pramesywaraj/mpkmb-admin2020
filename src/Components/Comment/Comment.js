@@ -56,7 +56,7 @@ function Comment({
 							key={Id}
 							title={
 								Answer && Answer !== ''
-									? null
+									? 'publish status'
 									: 'silahkan balas terlebih dahulu !'
 							}
 						>
