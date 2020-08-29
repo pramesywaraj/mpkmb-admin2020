@@ -106,6 +106,15 @@ export default function AddNewAssignmentModal({
 					style={{
 						marginBottom: '15px',
 					}}
+					label="Password"
+					name="UrlPassword"
+				>
+					<Input placeholder="Password untuk mengunci konten" />
+				</Form.Item>
+				<Form.Item
+					style={{
+						marginBottom: '15px',
+					}}
 					label="Kategori"
 					name="Category"
 					rules={[

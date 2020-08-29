@@ -29,6 +29,7 @@ export function getAssignmentList({ Page, Limit = 10 }) {
           Description
           Thumbnail
           Url
+          UrlPassword
           PublishStatus
           Category
           Type
@@ -60,6 +61,7 @@ export function addAssignment({
 	Description,
 	Thumbnail,
 	Url,
+	UrlPassword,
 	Category,
 	Type,
 }) {
@@ -70,7 +72,8 @@ export function addAssignment({
       $Thumbnail: String, 
       $Url: String,
       $PublishStatus: Boolean!, 
-      $Category: String!, 
+      $Category: String!,
+      $UrlPassword: String,
       $Type: String!, 
       $Order: Int
     ) {
@@ -80,7 +83,8 @@ export function addAssignment({
         Thumbnail: $Thumbnail,
         Url: $Url,
         PublishStatus: $PublishStatus, 
-        Category: $Category, 
+        Category: $Category,
+        UrlPassword: $UrlPassword,
         Type: $Type,
         Order: $Order
       ) {
@@ -89,6 +93,7 @@ export function addAssignment({
         Description
         Thumbnail
         Url
+        UrlPassword
         PublishStatus
         Category
         Type
@@ -107,6 +112,7 @@ export function addAssignment({
 			Description,
 			Thumbnail,
 			Url,
+			UrlPassword,
 			Category,
 			Type,
 			PublishStatus: true,
@@ -123,6 +129,7 @@ export function editAssignment({
 	Description,
 	Thumbnail,
 	Url,
+	UrlPassword,
 	Category,
 	Type,
 }) {
@@ -134,7 +141,8 @@ export function editAssignment({
       $Thumbnail: String, 
       $Url: String,
       $PublishStatus: Boolean, 
-      $Category: String, 
+      $Category: String,
+      $UrlPassword: String,
       $Type: String, 
       $Order: Int
     ) {
@@ -145,7 +153,8 @@ export function editAssignment({
         Thumbnail: $Thumbnail,
         Url: $Url,
         PublishStatus: $PublishStatus, 
-        Category: $Category, 
+        Category: $Category,
+        UrlPassword: $UrlPassword, 
         Type: $Type,
         Order: $Order
       ) {
@@ -154,6 +163,7 @@ export function editAssignment({
         Description
         Thumbnail
         Url
+        UrlPassword
         PublishStatus
         Category
         Type
@@ -173,6 +183,7 @@ export function editAssignment({
 			Description,
 			Thumbnail,
 			Url,
+			UrlPassword,
 			Category,
 			Type,
 			Order: null,
