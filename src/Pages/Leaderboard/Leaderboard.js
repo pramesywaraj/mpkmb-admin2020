@@ -140,7 +140,6 @@ export default function Leaderboard() {
 		try {
 			const res = await addLeaderboard(values);
 
-			LeaderboardForm.resetFields();
 			hideLeaderboardFormModal();
 
 			getLeaderboardsData();
@@ -159,7 +158,6 @@ export default function Leaderboard() {
 		try {
 			const res = await editLeaderboard(values);
 
-			LeaderboardForm.resetFields();
 			hideLeaderboardFormModal();
 
 			getLeaderboardsData();
@@ -223,7 +221,7 @@ export default function Leaderboard() {
 			LeaderboardUserForm.resetFields();
 			hideLeaderboardUserFormModal();
 
-			getLeaderboardUsers();
+			fetchLeaderboardUsers(selectedLeaderboard.LeaderboardId);
 
 			Message.success('Peserta berhasil diubah.');
 		} catch (e) {
@@ -385,30 +383,30 @@ export default function Leaderboard() {
 			return;
 		}
 
-		LeaderboardUserForm.validateFields()
-			.then((formValue) => {
-				let values = {
-					LeaderboardId: selectedLeaderboard.LeaderboardId,
-					Users: {
-						...formValue,
-					},
-				};
+		LeaderboardUserForm.validateFields().then((formValue) => {
+			let values = {
+				LeaderboardId: selectedLeaderboard.LeaderboardId,
+				Users: {
+					...formValue,
+				},
+			};
 
-				if (isEdit) {
-					let editedVal = {
-						...values,
-						Users: {
+			if (isEdit) {
+				let editedVal = {
+					...values,
+					Users: [
+						{
 							...values.Users,
 							LeaderboardUserId: selectedUser.LeaderboardUserId,
 						},
-					};
+					],
+				};
 
-					return editExistingUser(editedVal);
-				}
+				return editExistingUser(editedVal);
+			}
 
-				return addLeaderboardUsers(values);
-			})
-			.catch((err) => console.log(err));
+			return addLeaderboardUsers(values);
+		});
 	}
 
 	return (
