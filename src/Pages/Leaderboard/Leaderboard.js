@@ -189,6 +189,25 @@ export default function Leaderboard() {
 		}
 	}
 
+	async function addNewLeaderboardUser(values) {
+		showSubmitLoading();
+		try {
+			const res = await addLeaderboardUsers(values);
+
+			LeaderboardUserForm.resetFields();
+			hideLeaderboardUserFormModal();
+
+			fetchLeaderboardUsers(selectedLeaderboard.LeaderboardId);
+
+			Message.success('Peserta berhasil ditambahkan.');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideSubmitLoading();
+		}
+	}
+
 	async function removeLeaderboardUser(LeaderboardUserId) {
 		showUsersFetchLoading();
 		try {
@@ -388,6 +407,8 @@ export default function Leaderboard() {
 				LeaderboardId: selectedLeaderboard.LeaderboardId,
 				Users: {
 					...formValue,
+					Rank: parseInt(formValue.Rank),
+					Point: parseInt(formValue.Point),
 				},
 			};
 
@@ -405,7 +426,12 @@ export default function Leaderboard() {
 				return editExistingUser(editedVal);
 			}
 
-			return addLeaderboardUsers(values);
+			values = {
+				...values,
+				Users: [{ ...values.Users }],
+			};
+
+			return addNewLeaderboardUser(values);
 		});
 	}
 
