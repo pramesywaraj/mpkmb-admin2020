@@ -16,6 +16,7 @@ import {
 	OrganizationContentForm,
 } from 'Pages/OrganizationContent';
 import Store from 'Pages/Store/Store';
+import Leaderboard from 'Pages/Leaderboard/Leaderboard';
 import QNA from 'Pages/QNA/QNA';
 
 export const ROUTES = [
@@ -88,6 +89,13 @@ export const ROUTES = [
 				component: Store,
 			},
 			{
+				path: '/admin/leaderboard',
+				key: 'MPKMB_STORE_LEADERBOARD',
+				exact: true,
+				layout: true,
+				component: Leaderboard,
+      },
+      {
 				path: '/admin/qna',
 				key: 'MPKMB_QNA',
 				exact: true,

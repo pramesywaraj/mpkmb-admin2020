@@ -13,6 +13,7 @@ import {
 	CalendarFilled,
 	GlobalOutlined,
 	ShopFilled,
+	TrophyFilled,
 	QuestionCircleFilled,
 } from '@ant-design/icons';
 
@@ -54,7 +55,12 @@ const menuItems = [
 		icon: <ShopFilled />,
 	},
 	{
-		route: '/admin/qna',
+		route: '/admin/leaderboard',
+		name: 'Leaderboard',
+		icon: <TrophyFilled />,
+  },
+  {
+    route: '/admin/qna',
 		name: 'QNA',
 		icon: <QuestionCircleFilled />,
 	},

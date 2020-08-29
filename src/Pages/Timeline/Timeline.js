@@ -21,6 +21,7 @@ import {
 } from 'Service/Timeline';
 
 import AddNewTimelineModal from 'Components/Modal/AddNewTimelineModal';
+import { parseDate } from 'Utils/date';
 
 import useModal from 'Hooks/useModal';
 import useLoading from 'Hooks/useLoading';
@@ -198,12 +199,6 @@ export default function Timeline() {
 		} finally {
 			hideSubmitLoading();
 		}
-	}
-
-	function parseDate(date) {
-		let parsedDate = new Date(parseInt(date)).toISOString().split('T')[0];
-
-		return parsedDate;
 	}
 
 	return (

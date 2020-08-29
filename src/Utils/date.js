@@ -1,3 +1,8 @@
+export function parseDate(date) {
+	let parsedDate = new Date(parseInt(date)).toISOString().split('T')[0];
+	return parsedDate;
+}
+
 export function formatDate(date) {
 	var d = new Date(date),
 		month = '' + (d.getMonth() + 1),
