@@ -178,6 +178,39 @@ export function addLeaderboardUsers({ LeaderboardId, Users }) {
 	return res;
 }
 
+export function editLeaderboardUser({ LeaderboardId, Users }) {
+	const query = `
+    mutation(
+      $LeaderboardId: String!,
+      $Users: [LeaderboardUserInput]
+    ) {
+      CreateOrUpdateLeaderboardUser(
+        LeaderboardId: $LeaderboardId,
+        Users: $Users
+      ) {
+        LeaderboardId
+        Rank
+        NIM
+        Point
+        Name
+      }
+    }
+  `;
+
+	const res = fetchGraphql({
+		headers: {
+			Authorization: `${Cookies.getJSON('MPKMB_ADMIN_TOKEN').Token}`,
+		},
+		query,
+		variables: {
+			LeaderboardId,
+			Users,
+		},
+	});
+
+	return res;
+}
+
 export function getLeaderboardUsers({ LeaderboardId }) {
 	const query = `
     query (

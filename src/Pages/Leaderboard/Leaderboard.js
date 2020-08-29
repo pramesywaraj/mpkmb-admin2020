@@ -43,6 +43,7 @@ import {
 	addLeaderboardUsers,
 	getLeaderboardUsers,
 	deleteLeaderboardUser,
+	editLeaderboardUser,
 } from 'Service/Leaderboard';
 
 const { Column } = Table;
@@ -85,9 +86,11 @@ export default function Leaderboard() {
 	const [leaderboards, setLeaderboards] = useState([]);
 	const [selectedLeaderboard, setSelectedLeaderboard] = useState(null);
 	const [usersFile, setUsersFile] = useState(null);
-	const [users, setUsers] = useState(null);
+	const [users, setUsers] = useState([]);
+	const [selectedUser, setSelectedUser] = useState(null);
 	const [isEdit, setIsEdit] = useState(false);
 	const firstLoad = useRef(true);
+	const [usersNotSufficient, setUsersNotSufficient] = useState(false);
 
 	const [
 		isLeaderboardFormModalVisible,
@@ -212,22 +215,59 @@ export default function Leaderboard() {
 		}
 	}
 
+	async function editExistingUser(values) {
+		showSubmitLoading();
+		try {
+			const res = await editLeaderboardUser(values);
+
+			LeaderboardUserForm.resetFields();
+			hideLeaderboardUserFormModal();
+
+			getLeaderboardUsers();
+
+			Message.success('Peserta berhasil diubah.');
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideSubmitLoading();
+		}
+	}
+
+	// UseEffect
 	useEffect(() => {
 		if (firstLoad.current) firstLoad.current = false;
 
 		getLeaderboardsData();
 	}, []);
 
+	useEffect(() => {
+		// if (firstLoad.current) return;
+		if (selectedLeaderboard && users.length > 0) {
+			if (users.length < 10) setUsersNotSufficient(true);
+			return;
+		}
+
+		setUsersNotSufficient(false);
+	}, [users]);
+
+	// Handle functions
 	function handleCloseLeaderboardModal() {
-		LeaderboardForm.resetFields();
 		hideLeaderboardFormModal();
+		LeaderboardForm.resetFields();
 
 		setSelectedLeaderboard(null);
+
+		if (isEdit) setIsEdit(false);
 	}
 
 	function handleCloseUserModal() {
+		hideLeaderboardUserFormModal();
 		LeaderboardUserForm.resetFields();
-		hideLeaderboardFormModal();
+
+		setSelectedUser(null);
+
+		if (isEdit) setIsEdit(false);
 	}
 
 	function handleSubmitLeaderboardForm() {
@@ -331,6 +371,46 @@ export default function Leaderboard() {
 		});
 	}
 
+	function handleEditUser(user) {
+		setIsEdit(true);
+		setSelectedUser(user);
+
+		LeaderboardUserForm.setFieldsValue(user);
+		showLeaderboardUserFormModal();
+	}
+
+	function handleSubmitLeaderboardUserForm() {
+		if (users.length === 10) {
+			Message.warn('Peserta pada peringkat telah mencapai batas maksimum');
+			return;
+		}
+
+		LeaderboardUserForm.validateFields()
+			.then((formValue) => {
+				let values = {
+					LeaderboardId: selectedLeaderboard.LeaderboardId,
+					Users: {
+						...formValue,
+					},
+				};
+
+				if (isEdit) {
+					let editedVal = {
+						...values,
+						Users: {
+							...values.Users,
+							LeaderboardUserId: selectedUser.LeaderboardUserId,
+						},
+					};
+
+					return editExistingUser(editedVal);
+				}
+
+				return addLeaderboardUsers(values);
+			})
+			.catch((err) => console.log(err));
+	}
+
 	return (
 		<>
 			<PageHeader title="Leaderboard" />
@@ -402,8 +482,21 @@ export default function Leaderboard() {
 						</Table>
 					</Col>
 					<Col span={12}>
-						<Row style={{ paddingBottom: 10 }} align="middle" justify="center">
-							<Title level={4}>Peringkat Peserta</Title>
+						<Row style={{ paddingBottom: 10 }} align="middle" justify="start">
+							<Col span={usersNotSufficient ? 9 : 12}>
+								<Title level={4}>Peringkat Peserta</Title>
+							</Col>
+							{usersNotSufficient && (
+								<Col span={3}>
+									<Button
+										type="primary"
+										icon={<PlusCircleFilled />}
+										onClick={showLeaderboardUserFormModal}
+									>
+										Tambah Peserta
+									</Button>
+								</Col>
+							)}
 						</Row>
 						<Table
 							dataSource={users}
@@ -432,16 +525,28 @@ export default function Leaderboard() {
 							<Column title="Poin" dataIndex="Point" key="Point" />
 							<Column
 								key="action"
-								render={(text, { LeaderboardUserId }) => (
-									<Tooltip title="Hapus">
-										<Button
-											onClick={() => handleDeleteUser(LeaderboardUserId)}
-											type="primary"
-											shape="circle"
-											icon={<DeleteFilled />}
-											danger
-										/>
-									</Tooltip>
+								render={(text, record) => (
+									<Space size="middle">
+										<Tooltip title="Hapus">
+											<Button
+												onClick={() =>
+													handleDeleteUser(record.LeaderboardUserId)
+												}
+												type="primary"
+												shape="circle"
+												icon={<DeleteFilled />}
+												danger
+											/>
+										</Tooltip>
+										<Tooltip title="Sunting">
+											<Button
+												onClick={() => handleEditUser(record)}
+												type="primary"
+												shape="circle"
+												icon={<EditFilled />}
+											/>
+										</Tooltip>
+									</Space>
 								)}
 							/>
 						</Table>
@@ -461,7 +566,7 @@ export default function Leaderboard() {
 				isEdit={isEdit}
 				addLoading={submitLoading}
 				handleCancel={handleCloseUserModal}
-				handleSubmit={handleSubmitLeaderboardForm}
+				handleSubmit={handleSubmitLeaderboardUserForm}
 				formObject={LeaderboardUserForm}
 			/>
 		</>
