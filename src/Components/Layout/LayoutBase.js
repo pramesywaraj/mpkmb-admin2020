@@ -14,6 +14,7 @@ import {
 	GlobalOutlined,
 	ShopFilled,
 	TrophyFilled,
+	QuestionCircleFilled,
 } from '@ant-design/icons';
 
 import './LayoutBase.scss';
@@ -57,6 +58,11 @@ const menuItems = [
 		route: '/admin/leaderboard',
 		name: 'Leaderboard',
 		icon: <TrophyFilled />,
+  },
+  {
+    route: '/admin/qna',
+		name: 'QNA',
+		icon: <QuestionCircleFilled />,
 	},
 ];
 
