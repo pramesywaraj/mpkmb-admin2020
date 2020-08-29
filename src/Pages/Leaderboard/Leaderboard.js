@@ -16,11 +16,14 @@ import {
 	Tooltip,
 	Space,
 	Upload,
+	Modal,
 } from 'antd';
 import {
 	PlusCircleFilled,
 	EditFilled,
 	UploadOutlined,
+	DeleteFilled,
+	ExclamationCircleOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -37,10 +40,14 @@ import {
 	getLeaderboards,
 	addLeaderboard,
 	editLeaderboard,
+	addLeaderboardUsers,
+	getLeaderboardUsers,
+	deleteLeaderboardUser,
 } from 'Service/Leaderboard';
 
 const { Column } = Table;
 const { Title, Text } = Typography;
+const { confirm } = Modal;
 
 function LeaderboardUserUpload({ file, addFile, uploadFile, uploadLoading }) {
 	return (
@@ -92,8 +99,19 @@ export default function Leaderboard() {
 		showLeaderboardUserFormModal,
 		hideLeaderboardUserFormModal,
 	] = useModal();
+
 	const [submitLoading, showSubmitLoading, hideSubmitLoading] = useLoading();
 	const [fetchLoading, showFetchLoading, hideFetchLoading] = useLoading();
+	const [
+		usersFetchLoading,
+		showUsersFetchLoading,
+		hideUsersFetchLoading,
+	] = useLoading();
+	const [
+		parseExcelLoading,
+		showParseExcelLoading,
+		hideParseExcelLoading,
+	] = useLoading();
 
 	const [LeaderboardForm] = Form.useForm();
 	const [LeaderboardUserForm] = Form.useForm();
@@ -129,7 +147,7 @@ export default function Leaderboard() {
 			const { message } = e;
 			Message.error(message);
 		} finally {
-			hideFetchLoading();
+			hideSubmitLoading();
 		}
 	}
 
@@ -149,6 +167,48 @@ export default function Leaderboard() {
 			Message.error(message);
 		} finally {
 			hideSubmitLoading();
+		}
+	}
+
+	async function fetchLeaderboardUsers(LeaderboardId) {
+		showUsersFetchLoading();
+		try {
+			const {
+				data: {
+					LeaderboardUsers: { Users },
+				},
+			} = await getLeaderboardUsers({ LeaderboardId });
+
+			setUsers([...Users]);
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideUsersFetchLoading();
+		}
+	}
+
+	async function removeLeaderboardUser(LeaderboardUserId) {
+		showUsersFetchLoading();
+		try {
+			let newUsers = [...users];
+
+			const index = newUsers.findIndex(
+				(item) => LeaderboardUserId === item.LeaderboardUserId
+			);
+
+			if (index === -1) return;
+
+			newUsers.splice(index, 1);
+
+			const res = await deleteLeaderboardUser({ LeaderboardUserId });
+
+			setUsers([...newUsers]);
+		} catch (e) {
+			const { message } = e;
+			Message.error(message);
+		} finally {
+			hideUsersFetchLoading();
 		}
 	}
 
@@ -230,7 +290,7 @@ export default function Leaderboard() {
 		setUsersFile(file);
 	}
 
-	async function handleUploadFile() {
+	async function handleUploadExcelFile() {
 		if (!usersFile) {
 			Message.warn(
 				'Tidak ada file untuk diunggah. Silahkan pilih terlebih dahulu.'
@@ -238,11 +298,37 @@ export default function Leaderboard() {
 			return;
 		}
 
+		showParseExcelLoading();
+
+		const { LeaderboardId } = selectedLeaderboard;
+
 		try {
-			const res = await extractJSON(usersFile);
+			await extractJSON(usersFile).then(async (data) => {
+				const res = await addLeaderboardUsers({ LeaderboardId, Users: data });
+
+				Message.success('Data peringkat berhasil diunggah.');
+
+				fetchLeaderboardUsers(LeaderboardId);
+			});
 		} catch (e) {
 			Message.error(e);
+		} finally {
+			hideParseExcelLoading();
 		}
+	}
+
+	function handleDeleteUser(LeaderboardUserId) {
+		confirm({
+			title: 'Apakah Anda yakin?',
+			icon: <ExclamationCircleOutlined />,
+			okText: 'Ya',
+			okType: 'danger',
+			cancelText: 'Batalkan',
+			onOk() {
+				removeLeaderboardUser(LeaderboardUserId);
+			},
+			onCancel() {},
+		});
 	}
 
 	return (
@@ -261,16 +347,14 @@ export default function Leaderboard() {
 							</Button>
 						</Row>
 						<Table
+							rowSelection={{
+								selections: true,
+								type: 'radio',
+								onSelect: (record) => handleSelectLeaderboard(record),
+							}}
 							pagination={false}
 							rowKey="LeaderboardId"
 							dataSource={leaderboards}
-							onRow={(record, rowIndex) => {
-								return {
-									onClick: (e) => {
-										handleSelectLeaderboard(record);
-									},
-								};
-							}}
 							loading={fetchLoading}
 							locale={{
 								emptyText: (
@@ -329,9 +413,9 @@ export default function Leaderboard() {
 								emptyText: selectedLeaderboard ? (
 									<LeaderboardUserUpload
 										addFile={handleAddFile}
-										uploadFile={handleUploadFile}
+										uploadFile={handleUploadExcelFile}
 										file={usersFile}
-										uploadLoading={false}
+										uploadLoading={parseExcelLoading}
 									/>
 								) : (
 									<Empty
@@ -340,12 +424,26 @@ export default function Leaderboard() {
 									/>
 								),
 							}}
+							loading={usersFetchLoading}
 						>
 							<Column title="Ranking" dataIndex="Rank" key="Rank" />
 							<Column title="Nama" dataIndex="Name" key="Name" />
 							<Column title="NIM" dataIndex="NIM" key="NIM" />
 							<Column title="Poin" dataIndex="Point" key="Point" />
-							<Column key="action" render={(text, record) => <Switch />} />
+							<Column
+								key="action"
+								render={(text, { LeaderboardUserId }) => (
+									<Tooltip title="Hapus">
+										<Button
+											onClick={() => handleDeleteUser(LeaderboardUserId)}
+											type="primary"
+											shape="circle"
+											icon={<DeleteFilled />}
+											danger
+										/>
+									</Tooltip>
+								)}
+							/>
 						</Table>
 					</Col>
 				</Row>
