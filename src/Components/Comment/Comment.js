@@ -7,7 +7,7 @@ import {
 	CheckOutlined,
 	CloseOutlined,
 } from '@ant-design/icons';
-import formatDate from '../../Utils/date';
+import { formatDate } from 'Utils/date';
 import CommentEditor from './CommentEditor';
 
 function Comment({
