@@ -9,7 +9,7 @@ import {
 	Modal,
 } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import Comment from '../../Components/Comment/Comment';
+import Comment from 'Components/Comment/Comment';
 import useLoading from 'Hooks/useLoading';
 
 import {
@@ -17,7 +17,7 @@ import {
 	switchPublish,
 	editQNA,
 	DeleteQNA,
-} from '../../Service/QNA';
+} from 'Service/QNA';
 
 const { confirm } = Modal;
 
