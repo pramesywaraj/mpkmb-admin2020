@@ -121,8 +121,6 @@ export default function Assignment() {
 				let tempVal = {
 					...selectedAssignment,
 					...values,
-					UrlPassword:
-						values.UrlPassword.length === 0 ? null : values.UrlPassword,
 				};
 
 				return editExistingAssignment(tempVal);
